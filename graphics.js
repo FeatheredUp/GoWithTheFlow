@@ -1,4 +1,5 @@
 class Graphics {
+    shapes;
     #canvas;
     #context;
     #cellSize;
@@ -38,8 +39,8 @@ class Graphics {
     }
 
     #getCellSize(rowCount, colCount) {
-        var cellWidth = this.#canvas.width / colCount;
-        var cellHeight = this.#canvas.height / rowCount;
+        const cellWidth = this.#canvas.width / colCount;
+        const cellHeight = this.#canvas.height / rowCount;
 
         return Math.min(cellWidth, cellHeight);
     }
@@ -54,7 +55,7 @@ class Shape {
     height;
     piece;
     constructor(piece, cellSize, context) {
-        var halfCellSize = cellSize / 2;
+        const halfCellSize = cellSize / 2;
 
         this.#context = context;
         this.start = {x: piece.col * cellSize, y : piece.row * cellSize};
@@ -66,11 +67,11 @@ class Shape {
     }
 
     render() {
-        if (this.piece.touched) this.#context.fillStyle = '#05FFFF'; else this.#context.fillStyle = '#05EFFF';
+        this.#context.fillStyle = this.piece.touched ? '#05FFFF' : '#05EFFF';
         this.#context.fillRect(this.start.x, this.start.y, this.width, this.height);
 
-        this.#context.strokeStyle = 'purple';
-        this.#context.lineWidth = 7;
+        this.#context.strokeStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
+        this.#context.lineWidth = 12;
         this.#context.lineJoin = 'round';
         this.#context.lineCap = 'round';
 

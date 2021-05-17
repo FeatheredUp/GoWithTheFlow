@@ -1,8 +1,7 @@
 <!-- 
     TO DO
-    *) Flow start, calculation and display
     *) Generate random puzzles
-    *) Different size puzzles
+    *) Different sized puzzles
     *) Finish conditions
     *) Count moves differently (consecutively clicks on same point only count once)
     *) Time taken?
@@ -38,6 +37,7 @@
             if (shape != null) {
                 shape.piece.interact();
                 moveCount+= 1
+                puzzle.calculateFlow();
                 render();
             }
         }, false);
@@ -45,6 +45,7 @@
 
         var puzzle = new Puzzle();
         puzzle.mixUp();
+        puzzle.calculateFlow();
 
         var graphics = new Graphics(canvas, boardWidth, boardWidth);
         graphics.addPieces(puzzle.pieces);
