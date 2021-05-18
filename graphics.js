@@ -1,13 +1,15 @@
 class Graphics {
     shapes;
+    puzzle;
     #canvas;
     #context;
     #cellSize;
-    constructor(canvas, colCount, rowCount) {
+    constructor(canvas, puzzle) {
         this.#canvas = canvas;
         this.#context = canvas.getContext('2d');
         this.shapes = [];
-        this.#cellSize = this.#getCellSize(colCount, rowCount);
+        this.puzzle = puzzle;
+        this.#cellSize = this.#getCellSize(puzzle.colCount, puzzle.rowCount);
     }
 
     addPieces(pieces) {
@@ -21,6 +23,8 @@ class Graphics {
     }
 
     render() {
+        this.#context.fillStyle = '#EEEEEE';
+        this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
         for (const shape of this.shapes) {
             shape.render();
         }
@@ -88,5 +92,12 @@ class Shape {
             this.#context.moveTo(this.centre.x, this.centre.y);
             if (this.piece.down) this.#context.lineTo(this.centre.x, this.end.y);
         this.#context.stroke();
+
+        if (this.piece.countDirections == 1) {
+            this.#context.fillStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
+            this.#context.beginPath();
+            this.#context.arc(this.centre.x, this.centre.y, 10, 0, 2 * Math.PI);
+            this.#context.fill();
+        }
     }
 }

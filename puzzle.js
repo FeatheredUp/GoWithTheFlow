@@ -56,6 +56,8 @@ class Puzzle {
 
         this.makePuzzle();
         this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
+        this.mixUp();
+        this.calculateFlow();
     }
 
     makePuzzle() {
@@ -94,6 +96,13 @@ class Puzzle {
         for (const piece of this.pieces) piece.flow = false;
         let thisOne = this.pieces.find(({ row, col }) => row == this.flowStart.row && col == this.flowStart.col);
         this.#followFlow(thisOne);
+    }
+
+    isFinished() {
+        for (const piece of this.pieces) {
+            if (!piece.flow) return false;
+        }
+        return true;
     }
 
     #followFlow(piece) {
@@ -146,6 +155,7 @@ class Piece {
     interact() {
         this.rotate();
         this.touched = true;
+        this.puzzle.calculateFlow();
     }
 
     rotate() {
@@ -158,5 +168,14 @@ class Piece {
 
     findNeighbour(dir) {
         return this.puzzle.pieces.find(({ row, col }) => row == (this.row+dir.drow) && col == (this.col+dir.dcol));
+    }
+
+    get countDirections() {
+        let count = 0;
+        if (this.left) count += 1;
+        if (this.right) count += 1;
+        if (this.up) count += 1;
+        if (this.down) count += 1;
+        return count;
     }
 }
