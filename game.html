@@ -1,13 +1,10 @@
 <!-- 
     TO DO
-    *) Generate random puzzles
-    *) Different sized puzzles
     *) Finish conditions
     *) Count moves differently (consecutively clicks on same point only count once)
     *) Time taken?
     *) Different shapes (triangles and hexagons)
 -->
-
 
 <html>
 <head>
@@ -21,18 +18,18 @@
     <canvas id="myCanvas" width="800" height="800"></canvas>
     <span class="moveInfo">Move count: <span id="moveCount">Not started</span></span>
     <script language="JavaScript">
-        var canvas = document.getElementById('myCanvas'),
+        let canvas = document.getElementById('myCanvas'),
             canvasLeft = canvas.offsetLeft + canvas.clientLeft,
             canvasTop = canvas.offsetTop + canvas.clientTop,
-            boardWidth = 3,
-            boardHeight = 3,
+            colCount = 4,
+            rowCount = 7,
             moveCount = 0; 
 
         canvas.addEventListener('click', function (event) {
-            var x = event.pageX - canvasLeft,
+            let x = event.pageX - canvasLeft,
                 y = event.pageY - canvasTop;
 
-            var shape = graphics.getShapeAtPoint(x, y);
+            let shape = graphics.getShapeAtPoint(x, y);
 
             if (shape != null) {
                 shape.piece.interact();
@@ -43,11 +40,11 @@
         }, false);
 
 
-        var puzzle = new Puzzle();
+        let puzzle = new Puzzle(colCount, rowCount);
         puzzle.mixUp();
         puzzle.calculateFlow();
 
-        var graphics = new Graphics(canvas, boardWidth, boardWidth);
+        let graphics = new Graphics(canvas, colCount, rowCount);
         graphics.addPieces(puzzle.pieces);
 
         render();

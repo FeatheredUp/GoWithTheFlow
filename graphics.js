@@ -3,11 +3,11 @@ class Graphics {
     #canvas;
     #context;
     #cellSize;
-    constructor(canvas, rowCount, colCount) {
+    constructor(canvas, colCount, rowCount) {
         this.#canvas = canvas;
         this.#context = canvas.getContext('2d');
         this.shapes = [];
-        this.#cellSize = this.#getCellSize(rowCount, colCount);
+        this.#cellSize = this.#getCellSize(colCount, rowCount);
     }
 
     addPieces(pieces) {
@@ -38,7 +38,7 @@ class Graphics {
         return null;
     }
 
-    #getCellSize(rowCount, colCount) {
+    #getCellSize(colCount, rowCount) {
         const cellWidth = this.#canvas.width / colCount;
         const cellHeight = this.#canvas.height / rowCount;
 
