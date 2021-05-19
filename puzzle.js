@@ -56,6 +56,7 @@ class Puzzle {
     flowStart;
     colCount;
     rowCount;
+    minSolveCount;
     constructor(colCount, rowCount) {
         this.colCount = colCount;
         this.rowCount = rowCount;
@@ -103,11 +104,23 @@ class Puzzle {
 
     // Turns each piece around randomly between 0 and 3 times.
     #mixUp() {
+        let count = 0;
         for (const piece of this.pieces) {
-            for (let i = 0; i < getRandomValue(0, 3); i++) {
+            const rotations = getRandomValue(0, 3);
+            count+= this.#getUndoCount(piece, rotations);
+            for (let i = 0; i < rotations; i++) {
                 piece.rotate();
             }
         }
+        this.minSolveCount = count;
+    }
+
+    #getUndoCount(piece, rotations) {
+        if (rotations === 0) return 0;
+        if (piece.countDirections == 4) return 0;
+        let count = 4 - rotations;
+        if (piece.straight && count >= 2)  count -= 2;
+        return count;
     }
 
     // Works out which pieces have flow going through them
@@ -195,5 +208,12 @@ class Piece {
         if (this.up) count += 1;
         if (this.down) count += 1;
         return count;
+    }
+
+    // Returns true if the connectors are left & right only, or up and down only.
+    get straight() {
+        if (this.left && this.right && !this.up && !this.down) return true;
+        if (!this.left && !this.right && this.up && this.down) return true;
+        return false;
     }
 }
