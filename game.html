@@ -3,6 +3,8 @@
     *) calculate the min number of moves and display with move count
     *) improve end game
     *) add levels (random seed?)
+    *) choose size
+    *) support different colour themes
     *) Count moves differently (consecutively clicks on same point only count once)
     *) Time taken?
     *) Different shapes (triangles and hexagons)
@@ -23,8 +25,8 @@
         let canvas = document.getElementById('myCanvas'),
             canvasLeft = canvas.offsetLeft + canvas.clientLeft,
             canvasTop = canvas.offsetTop + canvas.clientTop,
-            colCount = 4,
-            rowCount = 5,
+            colCount = 10,
+            rowCount = 10,
             moveCount = 0,
             graphics; 
 
@@ -62,7 +64,8 @@
         }
 
         function render() {
-            document.getElementById('moveCount').innerHTML = moveCount;
+            var minSolveCount = graphics.puzzle.minSolveCount;
+            document.getElementById('moveCount').innerHTML = moveCount + ' of ' + minSolveCount;
             graphics.render();
         }
     </script>
