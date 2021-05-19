@@ -57,9 +57,11 @@ class Puzzle {
     colCount;
     rowCount;
     minSolveCount;
+    moveCount;
     constructor(colCount, rowCount) {
         this.colCount = colCount;
         this.rowCount = rowCount;
+        this.moveCount = 0;
 
         this.#makePuzzle();
         this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
@@ -183,6 +185,7 @@ class Piece {
     interact() {
         this.rotate();
         this.touched = true;
+        this.puzzle.moveCount += 1;
         this.puzzle.calculateFlow();
     }
 

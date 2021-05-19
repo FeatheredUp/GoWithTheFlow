@@ -27,7 +27,6 @@
             canvasTop = canvas.offsetTop + canvas.clientTop,
             colCount = 10,
             rowCount = 10,
-            moveCount = 0,
             graphics; 
 
         canvas.addEventListener('click', function (event) {
@@ -38,7 +37,6 @@
 
             if (shape != null) {
                 shape.piece.interact();
-                moveCount+= 1
                 render();
 
                 if (graphics.puzzle.isFinished()) {
@@ -50,7 +48,10 @@
         newPuzzle();
 
         function congratulate() {
-            alert('Well done! You finished in ' + moveCount + ' turns.');
+            const minSolveCount = graphics.puzzle.minSolveCount;
+            const moveCount = graphics.puzzle.moveCount;
+            const message = 'Well done! You finished in ' + moveCount + ' turns. The minimum was ' + minSolveCount;
+            alert(message);
             newPuzzle();
         }
 
@@ -64,8 +65,10 @@
         }
 
         function render() {
-            var minSolveCount = graphics.puzzle.minSolveCount;
-            document.getElementById('moveCount').innerHTML = moveCount + ' of ' + minSolveCount;
+            const minSolveCount = graphics.puzzle.minSolveCount;
+            const moveCount = graphics.puzzle.moveCount;
+            const message = '' + moveCount + ' (minimum ' + minSolveCount + ')';
+            document.getElementById('moveCount').innerHTML = message;
             graphics.render();
         }
     </script>
