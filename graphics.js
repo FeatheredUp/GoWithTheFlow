@@ -1,3 +1,4 @@
+// Represnts the graphics of the puzzle
 class Graphics {
     shapes;
     puzzle;
@@ -10,18 +11,24 @@ class Graphics {
         this.shapes = [];
         this.puzzle = puzzle;
         this.#cellSize = this.#getCellSize(puzzle.colCount, puzzle.rowCount);
+
+        this.#addPieces(puzzle.pieces);
     }
 
-    addPieces(pieces) {
+    // Add the puzzle pieces
+    #addPieces(pieces) {
         for (const piece of pieces) {
-            this.addPiece(piece);
+            this.#addPiece(piece);
         }
     }
 
-    addPiece(piece) {
-        this.shapes.push(new Shape(piece, this.#cellSize, this.#context));
+    // Add a single puzzle piece
+    #addPiece(piece) {
+        const flowStart = this.puzzle.flowStart.row === piece.row && this.puzzle.flowStart.col === piece.col;
+        this.shapes.push(new Shape(piece, this.#cellSize, this.#context, flowStart));
     }
 
+    // Render the puzzle area
     render() {
         this.#context.fillStyle = '#EEEEEE';
         this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
@@ -42,6 +49,7 @@ class Graphics {
         return null;
     }
 
+    // Calculate the cell size
     #getCellSize(colCount, rowCount) {
         const cellWidth = this.#canvas.width / colCount;
         const cellHeight = this.#canvas.height / rowCount;
@@ -50,6 +58,7 @@ class Graphics {
     }
 }
 
+// Represents a single shape on the grid
 class Shape {
     #context;
     start;
@@ -58,7 +67,8 @@ class Shape {
     width;
     height;
     piece;
-    constructor(piece, cellSize, context) {
+    #flowStart;
+    constructor(piece, cellSize, context, flowStart) {
         const halfCellSize = cellSize / 2;
 
         this.#context = context;
@@ -68,12 +78,16 @@ class Shape {
         this.width = cellSize;
         this.height = cellSize;
         this.piece = piece;
+        this.#flowStart = flowStart;
     }
 
+    // Render this shape
     render() {
+        // Background
         this.#context.fillStyle = this.piece.touched ? '#05FFFF' : '#05EFFF';
         this.#context.fillRect(this.start.x, this.start.y, this.width, this.height);
 
+        // The connectors
         this.#context.strokeStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
         this.#context.lineWidth = 12;
         this.#context.lineJoin = 'round';
@@ -93,10 +107,18 @@ class Shape {
             if (this.piece.down) this.#context.lineTo(this.centre.x, this.end.y);
         this.#context.stroke();
 
+        // The central 'end' if there's only one way out.
         if (this.piece.countDirections == 1) {
             this.#context.fillStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
             this.#context.beginPath();
             this.#context.arc(this.centre.x, this.centre.y, 10, 0, 2 * Math.PI);
+            this.#context.fill();
+        }
+
+        if (this.#flowStart) {
+            this.#context.fillStyle = '#FFFFFF';
+            this.#context.beginPath();
+            this.#context.arc(this.centre.x, this.centre.y, 5, 0, 2 * Math.PI);
             this.#context.fill();
         }
     }

@@ -1,6 +1,8 @@
 <!-- 
     TO DO
-    *) better graphics - show where the flow starts
+    *) calculate the min number of moves and display with move count
+    *) improve end game
+    *) add levels (random seed?)
     *) Count moves differently (consecutively clicks on same point only count once)
     *) Time taken?
     *) Different shapes (triangles and hexagons)
@@ -55,7 +57,6 @@
             let puzzle = new Puzzle(colCount, rowCount);
 
             graphics = new Graphics(canvas, puzzle);
-            graphics.addPieces(puzzle.pieces);
 
             render(graphics);
         }
