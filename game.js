@@ -19,7 +19,7 @@ function congratulate() {
 
 function newPuzzle(colCount, rowCount) { 
     switchScreen('game');
-    let puzzle = new Puzzle(colCount, rowCount);
+    let puzzle = new Puzzle(colCount, rowCount, 12);
     graphics = new Graphics(canvas, puzzle);
     render(graphics);
 }

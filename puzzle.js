@@ -58,7 +58,8 @@ class Puzzle {
     rowCount;
     minSolveCount;
     moveCount;
-    constructor(colCount, rowCount) {
+    constructor(colCount, rowCount, puzzleNumber) {
+        Math.seedrandom(puzzleNumber);
         this.colCount = colCount;
         this.rowCount = rowCount;
         this.moveCount = 0;

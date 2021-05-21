@@ -1,8 +1,8 @@
 <!-- 
     TO DO
-    *) add levels (random seed?)
-    *) undo button, restart button (assumes can recreate the current game)
+    *) add level select or similar.
     *) choose size
+    *) undo button, restart button (assumes can recreate the current game)
     *) support different colour themes
     *) Different shapes (triangles and hexagons)
     *) Count moves differently (consecutively clicks on same point only count once)
@@ -14,10 +14,11 @@
     <link rel="stylesheet" href="game.css"></style>
     <script src="graphics.js"></script>
     <script src="puzzle.js"></script>
+    <script src="seedrandom.js"></script>
 </head>
 <body>
     <div class="chooseScreen">
-        <div class="welcome" id="welcome">Welcome to <span class="gameName">In the Flow</span>!</div> 
+        <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="congratulate hidden" id="congratulate">Well done! You finished in <span id="completeMoveCount"></span> turns.  The minimum was <span id="completeMinimumMoveCount"></span>.</div>
         <button id="startGame">Start Game</button>
     </div>
