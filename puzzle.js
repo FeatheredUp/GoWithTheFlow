@@ -50,7 +50,7 @@ class Direction {
     }
 }
 
-// reprsents the whole puzzle.
+// represents the whole puzzle.
 class Puzzle {
     pieces = [];
     flowStart;
@@ -117,6 +117,7 @@ class Puzzle {
         this.minSolveCount = count;
     }
 
+    // Get the number of rotations needed to turn this piece back to the correct orientation.
     #getUndoCount(piece, rotations) {
         if (rotations === 0) return 0;
         if (piece.countDirections == 4) return 0;

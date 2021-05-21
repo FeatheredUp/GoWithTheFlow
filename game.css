@@ -1,0 +1,3 @@
+.moveInfo { position:absolute; left: 15px; top: 820px;}
+.hidden { display:none; }
+.canvas { z-index:99; }
