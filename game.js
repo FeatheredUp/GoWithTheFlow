@@ -1,5 +1,6 @@
 let canvas = document.getElementById('canvas'),
-    graphics; 
+    graphics,
+    currentLevel; 
 
 document.getElementById("startGame").addEventListener('click', function(event) {
     document.getElementById("welcome").classList.add('hidden');
@@ -7,19 +8,22 @@ document.getElementById("startGame").addEventListener('click', function(event) {
     newPuzzle(5, 7);
 }, false);
 
-switchScreen('choose');
 attachShapeClick();
+switchScreen('choose');
 
 function congratulate() {
     document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
     document.getElementById("completeMinimumMoveCount").innerText = graphics.puzzle.minSolveCount;
 
+    saveLastLevel(currentLevel);
     switchScreen('choose');
 }
 
 function newPuzzle(colCount, rowCount) { 
+    currentLevel = getLastLevel() + 1;
+    document.getElementById("gameLevel").innerText = currentLevel;
     switchScreen('game');
-    let puzzle = new Puzzle(colCount, rowCount, 12);
+    let puzzle = new Puzzle(colCount, rowCount, currentLevel);
     graphics = new Graphics(canvas, puzzle);
     render(graphics);
 }
@@ -39,6 +43,18 @@ function switchScreen(screenToShow) {
     document.getElementsByClassName(screenToShow + "Screen")[0].classList.remove('hidden');
 }
 
+function getLastLevel() {
+    if (!localStorage.getItem('level')) {
+        localStorage.setItem('level', 0);
+    }
+
+    return parseInt(localStorage.getItem('level'));
+}
+
+function saveLastLevel(level) {
+    localStorage.setItem('level', level);
+}
+
 function attachShapeClick() {
     canvas.addEventListener('click', function (event) {
         let canvasLeft = canvas.offsetLeft + canvas.clientLeft,
@@ -51,9 +67,8 @@ function attachShapeClick() {
         if (shape != null) {
             shape.piece.interact();
             render();
-    
             if (graphics.puzzle.isFinished()) {
-                setTimeout(congratulate, 500);
+                congratulate();
             }
         }
     }, false);
