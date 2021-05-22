@@ -1,12 +1,12 @@
 <!-- 
     TO DO
-    *) add level select or similar.
-    *) choose size
+    *) choose size/difficulty
     *) undo button, restart button (assumes can recreate the current game)
+    *) 'give up' button'
     *) support different colour themes
     *) Different shapes (triangles and hexagons)
-    *) Count moves differently (consecutively clicks on same point only count once)
     *) Time taken?
+    *) Gather and display stats?
 -->
 
 <html>
@@ -17,15 +17,16 @@
     <script src="seedrandom.js"></script>
 </head>
 <body>
-    <div class="chooseScreen">
+    <div class="chooseScreen" id="chooseScreen">
         <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="congratulate hidden" id="congratulate">Well done! You finished in <span id="completeMoveCount"></span> turns.  The minimum was <span id="completeMinimumMoveCount"></span>.</div>
+        <div class="levelContainer">Choose level <input type="range" min="1" max="10" value="10" class="levelSlider" id="levelSlider"><span class="levelValue" id="levelValue"></span></div>
         <button id="startGame">Start Game</button>
     </div>
-    <div class="gameScreen">
+    <div class="gameScreen" id="gameScreen">
         <div>Level <span id="gameLevel">XX</span></div>
-        <canvas class="canvas" id="canvas" width="800" height="800" style="border:solid black 1px;"></canvas>
-        <span class="moveInfo">Move count: <span id="moveCount">Not started</span></span> 
+        <canvas class="canvas" id="canvas" width="800" height="800"></canvas>
+        <div class="moveInfo">Move count: <span id="moveCount">Not started</span></div> 
     </div>
     <script src="game.js"></script>
 </body>

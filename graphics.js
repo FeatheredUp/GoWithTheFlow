@@ -1,16 +1,27 @@
-// Represnts the graphics of the puzzle
+// Represents the graphics of the puzzle
 class Graphics {
     shapes;
     puzzle;
     #canvas;
     #context;
     #cellSize;
+    #leftMargin = 10;
+    #topMargin = 10;
+    #rightMargin = 10;
+    #bottomMargin = 10;
+    #backColour = '#05EFFF';
+    #effectiveWidth;
+    #effectiveHeight;
     constructor(canvas, puzzle) {
         this.#canvas = canvas;
         this.#context = canvas.getContext('2d');
         this.shapes = [];
         this.puzzle = puzzle;
+
         this.#cellSize = this.#getCellSize(puzzle.colCount, puzzle.rowCount);
+
+        this.#effectiveWidth = (this.#cellSize * puzzle.colCount) + this.#leftMargin + this.#rightMargin;
+        this.#effectiveHeight = (this.#cellSize * puzzle.rowCount) + this.#topMargin + this.#bottomMargin;
 
         this.#addPieces(puzzle.pieces);
     }
@@ -25,13 +36,13 @@ class Graphics {
     // Add a single puzzle piece
     #addPiece(piece) {
         const flowStart = this.puzzle.flowStart.row === piece.row && this.puzzle.flowStart.col === piece.col;
-        this.shapes.push(new Shape(piece, this.#cellSize, this.#context, flowStart));
+        this.shapes.push(new Shape(piece, this.#cellSize, this.#leftMargin, this.#topMargin, this.#context, flowStart));
     }
 
     // Render the puzzle area
     render() {
-        this.#context.fillStyle = '#EEEEEE';
-        this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+        this.#context.fillStyle = this.#backColour;
+        this.#context.fillRect(0, 0, this.#effectiveWidth, this.#effectiveHeight);
         for (const shape of this.shapes) {
             shape.render();
         }
@@ -51,8 +62,8 @@ class Graphics {
 
     // Calculate the cell size
     #getCellSize(colCount, rowCount) {
-        const cellWidth = this.#canvas.width / colCount;
-        const cellHeight = this.#canvas.height / rowCount;
+        const cellWidth = (this.#canvas.width - this.#leftMargin - this.#rightMargin) / colCount;
+        const cellHeight = (this.#canvas.height - this.#topMargin - this.#bottomMargin) / rowCount;
 
         return Math.min(cellWidth, cellHeight);
     }
@@ -68,11 +79,11 @@ class Shape {
     height;
     piece;
     #flowStart;
-    constructor(piece, cellSize, context, flowStart) {
+    constructor(piece, cellSize, xOffset, yOffset, context, flowStart) {
         const halfCellSize = cellSize / 2;
 
         this.#context = context;
-        this.start = {x: piece.col * cellSize, y : piece.row * cellSize};
+        this.start = {x: xOffset + (piece.col * cellSize), y : yOffset + (piece.row * cellSize)};
         this.centre = {x: this.start.x + halfCellSize, y : this.start.y + halfCellSize};
         this.end = {x: this.start.x + cellSize, y : this.start.y + cellSize};
         this.width = cellSize;
