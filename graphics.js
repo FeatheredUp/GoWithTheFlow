@@ -1,3 +1,20 @@
+// Represents the colours used
+class Colours {
+    back;
+    touched;
+    flow;
+    noFlow;
+    flowStart;
+
+    constructor() {
+        this.back = '#05EFFF';
+        this.touched = '#05FFFF';
+        this.flow = '#FF0000';
+        this.noFlow = '#FF00FF';
+        this.flowStart = '#FFFFFF';
+    }
+}
+
 // Represents the graphics of the puzzle
 class Graphics {
     shapes;
@@ -9,14 +26,16 @@ class Graphics {
     #topMargin = 10;
     #rightMargin = 10;
     #bottomMargin = 10;
-    #backColour = '#05EFFF';
     #effectiveWidth;
     #effectiveHeight;
+    #colours;
+
     constructor(canvas, puzzle) {
         this.#canvas = canvas;
         this.#context = canvas.getContext('2d');
         this.shapes = [];
         this.puzzle = puzzle;
+        this.#colours = new Colours();
 
         this.#cellSize = this.#getCellSize(puzzle.colCount, puzzle.rowCount);
 
@@ -36,13 +55,17 @@ class Graphics {
     // Add a single puzzle piece
     #addPiece(piece) {
         const flowStart = this.puzzle.flowStart.row === piece.row && this.puzzle.flowStart.col === piece.col;
-        this.shapes.push(new Shape(piece, this.#cellSize, this.#leftMargin, this.#topMargin, this.#context, flowStart));
+        this.shapes.push(new Shape(piece, this.#cellSize, this.#leftMargin, this.#topMargin, this.#context, flowStart, this.#colours));
     }
 
     // Render the puzzle area
     render() {
-        this.#context.fillStyle = this.#backColour;
+        this.#context.fillStyle = 'white';
+        this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
+
+        this.#context.fillStyle = this.#colours.back;
         this.#context.fillRect(0, 0, this.#effectiveWidth, this.#effectiveHeight);
+
         for (const shape of this.shapes) {
             shape.render();
         }
@@ -78,8 +101,9 @@ class Shape {
     width;
     height;
     piece;
-    #flowStart;
-    constructor(piece, cellSize, xOffset, yOffset, context, flowStart) {
+    #isFlowStart;
+    #colours;
+    constructor(piece, cellSize, xOffset, yOffset, context, isFlowStart, colours) {
         const halfCellSize = cellSize / 2;
 
         this.#context = context;
@@ -89,17 +113,18 @@ class Shape {
         this.width = cellSize;
         this.height = cellSize;
         this.piece = piece;
-        this.#flowStart = flowStart;
+        this.#isFlowStart = isFlowStart;
+        this.#colours = colours;
     }
 
     // Render this shape
     render() {
         // Background
-        this.#context.fillStyle = this.piece.touched ? '#05FFFF' : '#05EFFF';
+        this.#context.fillStyle = this.piece.touched ? this.#colours.touched : this.#colours.back;
         this.#context.fillRect(this.start.x, this.start.y, this.width, this.height);
 
         // The connectors
-        this.#context.strokeStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
+        this.#context.strokeStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
         this.#context.lineWidth = 12;
         this.#context.lineJoin = 'round';
         this.#context.lineCap = 'round';
@@ -120,14 +145,15 @@ class Shape {
 
         // The central 'end' if there's only one way out.
         if (this.piece.countDirections == 1) {
-            this.#context.fillStyle = this.piece.flow ? '#FF0000' : '#FF00FF';
+            this.#context.fillStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
             this.#context.beginPath();
             this.#context.arc(this.centre.x, this.centre.y, 10, 0, 2 * Math.PI);
             this.#context.fill();
         }
 
-        if (this.#flowStart) {
-            this.#context.fillStyle = '#FFFFFF';
+        // The flow 'start' indicator
+        if (this.#isFlowStart) {
+            this.#context.fillStyle = this.#colours.isFlowStart;
             this.#context.beginPath();
             this.#context.arc(this.centre.x, this.centre.y, 5, 0, 2 * Math.PI);
             this.#context.fill();
