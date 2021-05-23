@@ -132,10 +132,22 @@ function attachEvents() {
         }
     }, false);
 
-    document.getElementById("startGame").addEventListener('click', function(event) {
+    document.getElementById("startButton").addEventListener('click', function(event) {
         document.getElementById("welcome").classList.add('hidden');
         document.getElementById("congratulate").classList.remove('hidden');
         newPuzzle();
+    }, false);
+
+    document.getElementById("undoButton").addEventListener('click', function(event) {
+        alert('not implemented yet');
+    }, false);
+
+    document.getElementById("restartButton").addEventListener('click', function(event) {
+        newPuzzle();
+    }, false);
+
+    document.getElementById("backButton").addEventListener('click', function(event) {
+        showChooseScreen(currentDifficulty, currentLevel);
     }, false);
 
     document.getElementById("levelSlider").addEventListener('input', function(event){

@@ -22,12 +22,17 @@
         <div class="congratulate hidden" id="congratulate">Well done! You finished in <span id="completeMoveCount"></span> turns.  The minimum was <span id="completeMinimumMoveCount"></span>.</div>
         <div class="difficultyContainer">Choose difficulty <input type="range" min="1" max="5" value="1" class="difficultySlider" id="difficultySlider"><span class="difficultyValue" id="difficultyValue"></span></div>
         <div class="levelContainer">Choose level <input type="range" min="1" max="10" value="10" class="levelSlider" id="levelSlider"><span class="levelValue" id="levelValue"></span></div>
-        <button id="startGame">Start Game</button>
+        <button id="startButton">Start Game</button>
     </div>
     <div class="gameScreen" id="gameScreen">
         <div>Level <span id="gameLevel">XX</span></div>
         <canvas class="canvas" id="canvas" width="800" height="800"></canvas>
         <div class="moveInfo">Move count: <span id="moveCount">Not started</span></div> 
+        <div class="buttonBar">
+            <button id="undoButton">Undo</button>
+            <button id="restartButton">Restart</button>
+            <button id="backButton">Back to Select</button>
+            </div>
     </div>
     <script src="game.js"></script>
 </body>
