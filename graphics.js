@@ -43,6 +43,8 @@ class Graphics {
         this.#effectiveHeight = (this.#cellSize * puzzle.rowCount) + this.#topMargin + this.#bottomMargin;
 
         this.#addPieces(puzzle.pieces);
+
+        this.render();
     }
 
     // Add the puzzle pieces
@@ -71,8 +73,25 @@ class Graphics {
         }
     }
 
+    // Player has clicked on the canvas, take appropriate action
+    clickAtPoint(pageX, pageY) {
+        let canvasLeft = this.#canvas.offsetLeft + this.#canvas.clientLeft,
+            canvasTop = this.#canvas.offsetTop + this.#canvas.clientTop,
+            x = pageX - canvasLeft,
+            y = pageY - canvasTop;
+    
+        let shape = this.#getShapeAtPoint(x, y);
+    
+        if (shape != null) {
+            shape.piece.interact();
+            this.render();
+            return true;
+        }
+        return false;
+    }
+
     // Get the shape clicked (assumes rectangular shapes)
-    getShapeAtPoint(x, y) {
+    #getShapeAtPoint(x, y) {
         for (const shape of this.shapes) {
             if (y > shape.start.y && y < shape.end.y
                 && x > shape.start.x && x < shape.end.x) {

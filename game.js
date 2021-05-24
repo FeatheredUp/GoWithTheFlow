@@ -47,7 +47,6 @@ function render() {
     const moveCount = graphics.puzzle.moveCount;
     const message = '' + moveCount + ' (minimum possible is ' + minSolveCount + ')';
     document.getElementById('moveCount').innerHTML = message;
-    graphics.render();
 }
 
 function showGameScreen() {
@@ -116,15 +115,9 @@ function mapDifficultyToWords(difficulty) {
 
 function attachEvents() {
     canvas.addEventListener('click', function (event) {
-        let canvasLeft = canvas.offsetLeft + canvas.clientLeft,
-            canvasTop = canvas.offsetTop + canvas.clientTop,
-            x = event.pageX - canvasLeft,
-            y = event.pageY - canvasTop;
-    
-        let shape = graphics.getShapeAtPoint(x, y);
-    
-        if (shape != null) {
-            shape.piece.interact();
+        let hit = graphics.clickAtPoint(event.pageX, event.pageY);
+
+        if (hit) {
             render();
             if (graphics.puzzle.isFinished()) {
                 congratulate();
