@@ -58,6 +58,7 @@ class Puzzle {
     rowCount;
     minSolveCount;
     moveCount;
+    history = [];
     constructor(colCount, rowCount, puzzleNumber) {
         Math.seedrandom(puzzleNumber);
         this.colCount = colCount;
@@ -157,6 +158,18 @@ class Puzzle {
             if (next && next.up) this.#followFlow(next);
         }
     }
+
+    addHistory(piece) {
+        this.history.push({ row : piece.row, col : piece.col});
+    }
+
+    undo() {
+        const lastMove = this.history.pop();
+        if (!lastMove) return;
+        const piece = this.pieces.find(({ row, col }) => row == lastMove.row && col == lastMove.col);
+        if (!piece) return;
+        piece.undo();
+    }
 }
 
 // Represents a single square of the puzzle.
@@ -169,7 +182,7 @@ class Piece {
     right;
     down;
     flow;
-    touched;
+    touchCount;
     constructor(puzzle, row, col, left, up, right, down) {
         this.puzzle = puzzle;
         this.row = row;
@@ -180,24 +193,41 @@ class Piece {
         this.down = down;
 
         this.flow = false;
-        this.touched = false;
+        this.touchCount = 0;
     }
 
     // The piece has been 'clicked on' by the player, so rotate it,  mark it as touched, and update the flow.
     interact() {
         this.rotate();
-        this.touched = true;
+        this.touchCount += 1;
         this.puzzle.moveCount += 1;
+        this.puzzle.calculateFlow();
+        this.puzzle.addHistory(this);
+    }
+
+    undo(){
+        this.unrotate();
+        this.touchCount -= 1;
+        this.puzzle.moveCount -= 1;
         this.puzzle.calculateFlow();
     }
 
-    // The piece is rotated, either as part of the setup, or by the player.
+    // The piece is rotated clockwise, either as part of the setup, or by the player.
     rotate() {
         const originalRight = this.right;
         this.right = this.up;
         this.up = this.left;
         this.left = this.down;
         this.down = originalRight;
+    }
+
+    // The piece is rotated anti-clockwise, as part of an undo.
+    unrotate() {
+        const originalLeft = this.left;
+        this.left = this.up;
+        this.up = this.right;
+        this.right = this.down;
+        this.down = originalLeft;
     }
 
     // Find the neighbour of this piece in the specified direction (this could be null if it's at the edge)
@@ -220,5 +250,9 @@ class Piece {
         if (this.left && this.right && !this.up && !this.down) return true;
         if (!this.left && !this.right && this.up && this.down) return true;
         return false;
+    }
+
+    get touched() {
+        return (this.touchCount > 0);
     }
 }

@@ -27,6 +27,11 @@ function newPuzzle() {
     showGameScreen();
 }
 
+function undoLastMove() {
+    graphics.undo();
+    render(graphics);
+}
+
 function getSizeFromDifficulty(difficulty) {
     switch (difficulty) {
         case 1:
@@ -132,7 +137,7 @@ function attachEvents() {
     }, false);
 
     document.getElementById("undoButton").addEventListener('click', function(event) {
-        alert('not implemented yet');
+        undoLastMove();
     }, false);
 
     document.getElementById("restartButton").addEventListener('click', function(event) {

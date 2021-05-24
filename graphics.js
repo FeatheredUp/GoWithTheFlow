@@ -90,6 +90,11 @@ class Graphics {
         return false;
     }
 
+    undo() {
+        this.puzzle.undo();
+        this.render();
+    }
+
     // Get the shape clicked (assumes rectangular shapes)
     #getShapeAtPoint(x, y) {
         for (const shape of this.shapes) {
