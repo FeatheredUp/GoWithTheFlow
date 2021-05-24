@@ -43,6 +43,7 @@ class Direction {
         if (dir == Direction.down) piece.up = true;
     }
 
+    // is the direction possible
     static #isDirectionPossible(piece, dir) {
         const next = piece.findNeighbour(dir);
         if (next == undefined) return false;
@@ -59,16 +60,34 @@ class Puzzle {
     minSolveCount;
     moveCount;
     history = [];
-    constructor(colCount, rowCount, puzzleNumber) {
+
+    constructor(difficulty, puzzleNumber) {
         Math.seedrandom(puzzleNumber);
-        this.colCount = colCount;
-        this.rowCount = rowCount;
+
+        const size = this.#getSizeFromDifficulty(difficulty);
+        this.colCount = size.colCount;
+        this.rowCount = size.rowCount;
         this.moveCount = 0;
 
         this.#makePuzzle();
         this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
         this.#mixUp();
         this.calculateFlow();
+    }
+
+    #getSizeFromDifficulty(difficulty) {
+        switch (difficulty) {
+            case 1:
+                return { colCount: 3, rowCount: 3 }; 
+            case 2:
+                return { colCount: getRandomValue(4, 6), rowCount: getRandomValue(4, 6) };
+            case 3:
+                return { colCount: getRandomValue(5, 7), rowCount: getRandomValue(7, 9) };
+            case 4:
+                return { colCount: getRandomValue(9, 11), rowCount: getRandomValue(11, 13) };
+            case 5:
+                return { colCount: getRandomValue(14, 16), rowCount: getRandomValue(16, 18) };
+        }
     }
 
     // Returns true if the flow has reached all pieces.
@@ -159,10 +178,12 @@ class Puzzle {
         }
     }
 
+    // add a move to the history
     addHistory(piece) {
         this.history.push({ row : piece.row, col : piece.col});
     }
 
+    // undo the last move
     undo() {
         const lastMove = this.history.pop();
         if (!lastMove) return;
@@ -183,6 +204,7 @@ class Piece {
     down;
     flow;
     touchCount;
+
     constructor(puzzle, row, col, left, up, right, down) {
         this.puzzle = puzzle;
         this.row = row;
@@ -205,6 +227,7 @@ class Piece {
         this.puzzle.addHistory(this);
     }
 
+    // undo the move on this piece
     undo(){
         this.unrotate();
         this.touchCount -= 1;
@@ -252,6 +275,7 @@ class Piece {
         return false;
     }
 
+    // Returns true if the piece has been touched
     get touched() {
         return (this.touchCount > 0);
     }

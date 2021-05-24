@@ -18,10 +18,8 @@ function newPuzzle() {
     currentDifficulty = parseInt(document.getElementById("difficultySlider").value)
     currentLevel = parseInt(document.getElementById("levelSlider").value);
 
-    const puzzleSize = getSizeFromDifficulty(currentDifficulty);
-
     document.getElementById("gameLevel").innerText = currentLevel;
-    let puzzle = new Puzzle(puzzleSize.colCount, puzzleSize.rowCount, currentLevel);
+    let puzzle = new Puzzle(currentDifficulty, currentLevel);
     graphics = new Graphics(canvas, puzzle);
     render(graphics);
     showGameScreen();
@@ -30,21 +28,6 @@ function newPuzzle() {
 function undoLastMove() {
     graphics.undo();
     render(graphics);
-}
-
-function getSizeFromDifficulty(difficulty) {
-    switch (difficulty) {
-        case 1:
-            return { colCount: 3, rowCount: 3 }; 
-        case 2:
-            return { colCount: 5, rowCount: 5 };
-        case 3:
-            return { colCount: 6, rowCount: 8 };
-        case 4:
-            return { colCount: 10, rowCount: 12 };
-        case 5:
-            return { colCount: 15, rowCount: 17 };
-    }
 }
 
 function render() {
