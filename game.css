@@ -1,6 +1,6 @@
 .hidden { display:none; }
 
-.levelSlider {
+.slider{
     -webkit-appearance: none;
     height: 15px;
     border-radius: 5px;   
@@ -11,7 +11,7 @@
     transition: opacity .2s;
   } 
   
-  .levelSlider::-webkit-slider-thumb {
+  .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 25px;
@@ -21,7 +21,7 @@
     cursor: pointer;
   }
   
-  .levelSlider::-moz-range-thumb {
+  .slider::-moz-range-thumb {
     width: 25px;
     height: 25px;
     border-radius: 50%;

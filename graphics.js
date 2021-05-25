@@ -1,20 +1,3 @@
-// Represents the colours used
-class Colours {
-    back;
-    touched;
-    flow;
-    noFlow;
-    flowStart;
-
-    constructor() {
-        this.back = '#05EFFF';
-        this.touched = '#05FFFF';
-        this.flow = '#FF0000';
-        this.noFlow = '#FF00FF';
-        this.flowStart = '#FFFFFF';
-    }
-}
-
 // Represents the graphics of the puzzle
 class Graphics {
     shapes;
@@ -28,14 +11,14 @@ class Graphics {
     #bottomMargin = 10;
     #effectiveWidth;
     #effectiveHeight;
-    #colours;
+    #options;
 
-    constructor(canvas, puzzle) {
+    constructor(canvas, puzzle, colourScheme) {
         this.#canvas = canvas;
         this.#context = canvas.getContext('2d');
         this.shapes = [];
         this.puzzle = puzzle;
-        this.#colours = new Colours();
+        this.#options = new Options(colourScheme);
 
         this.#cellSize = this.#getCellSize(puzzle.colCount, puzzle.rowCount);
 
@@ -57,7 +40,7 @@ class Graphics {
     // Add a single puzzle piece
     #addPiece(piece) {
         const flowStart = this.puzzle.flowStart.row === piece.row && this.puzzle.flowStart.col === piece.col;
-        this.shapes.push(new Shape(piece, this.#cellSize, this.#leftMargin, this.#topMargin, this.#context, flowStart, this.#colours));
+        this.shapes.push(new Shape(piece, this.#cellSize, this.#leftMargin, this.#topMargin, this.#context, flowStart, this.#options.colourScheme));
     }
 
     // Render the puzzle area
@@ -65,7 +48,7 @@ class Graphics {
         this.#context.fillStyle = 'white';
         this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
 
-        this.#context.fillStyle = this.#colours.back;
+        this.#context.fillStyle = this.#options.colourScheme.back;
         this.#context.fillRect(0, 0, this.#effectiveWidth, this.#effectiveHeight);
 
         for (const shape of this.shapes) {

@@ -3,6 +3,7 @@ let canvas = document.getElementById('canvas'),
     currentDifficulty,
     currentLevel; 
 
+initialiseControls();
 attachEvents();
 showChooseScreen(null, null);
 
@@ -17,10 +18,11 @@ function congratulate() {
 function newPuzzle() { 
     currentDifficulty = parseInt(document.getElementById("difficultySlider").value)
     currentLevel = parseInt(document.getElementById("levelSlider").value);
+    const colourScheme = document.getElementById('colourSelect').value;
 
     document.getElementById("gameLevel").innerText = currentLevel;
     let puzzle = new Puzzle(currentDifficulty, currentLevel);
-    graphics = new Graphics(canvas, puzzle);
+    graphics = new Graphics(canvas, puzzle, colourScheme);
     render(graphics);
     showGameScreen();
 }
@@ -99,6 +101,20 @@ function mapDifficultyToWords(difficulty) {
         case 5:
             return 'Challenging';
     }
+}
+
+function initialiseControls() {
+    const colourSelect = document.getElementById("colourSelect");
+    const colours = ColourScheme.allSchemes;
+    for (const colour of colours) {
+        addOption(colourSelect, colour.name);
+    }
+}
+
+function addOption(select, itemText) {
+    const opt = document.createElement('option');
+    opt.text = itemText;
+    select.add(opt);
 }
 
 function attachEvents() {
