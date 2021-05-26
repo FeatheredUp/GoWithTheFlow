@@ -1,7 +1,13 @@
-.hidden { display:none; }
+.hidden { 
+  display:none; 
+}
 
-.slider{
-    -webkit-appearance: none;
+/* Choose screen */
+.chooseScreen {
+  font-size: 1.2em;
+}
+
+.chooseScreen .slider{
     height: 15px;
     border-radius: 5px;   
     background: #d3d3d3;
@@ -9,22 +15,58 @@
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
-  } 
-  
-  .slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%; 
-    background: #FF00FF;
-    cursor: pointer;
-  }
-  
-  .slider::-moz-range-thumb {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: #FF00FF;
-    cursor: pointer;
-  }
+} 
+
+.chooseScreen .welcome {
+  font-size: 1.8em;
+}
+
+.chooseScreen .gameName {
+  color: cornflowerblue;
+}
+
+.chooseScreen div {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.chooseScreen button {
+  margin-top: 10px;
+  width: 70px;
+  height: 35px;
+}
+
+.chooseScreen #startButton {
+  position: relative;
+  left: 10px;
+  top: 10px;
+}
+
+/* Game Screen */
+.gameScreen .levelDisplayContainer {
+    width: 800px;
+    font-size: 1.8em;
+    text-align: center;
+}
+
+.gameScreen .moveDisplayContainer {
+    width: 800px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.gameScreen .count {
+    color: red;
+}
+
+.gameScreen button {
+    margin-top: 10px;
+    width: 70px;
+    height: 35px;
+}
+
+.gameScreen #backButton {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}

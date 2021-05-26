@@ -35,8 +35,8 @@ function undoLastMove() {
 function render() {
     const minSolveCount = graphics.puzzle.minSolveCount;
     const moveCount = graphics.puzzle.moveCount;
-    const message = '' + moveCount + ' (minimum possible is ' + minSolveCount + ')';
-    document.getElementById('moveCount').innerHTML = message;
+    document.getElementById('moveCount').innerHTML = moveCount;
+    document.getElementById('minMoveCount').innerHTML = minSolveCount;
 }
 
 function showGameScreen() {
@@ -67,6 +67,7 @@ function changeLevelSlider(difficulty) {
     document.getElementById("levelValue").innerText = maxLevel;
 }
 
+/* Storage */
 function getStoredDifficulty() {
     if (!localStorage.getItem('difficulty')) {
         localStorage.setItem('difficulty', 1);
@@ -82,11 +83,23 @@ function getStoredLastLevel(difficulty) {
     return parseInt(localStorage.getItem(key));
 }
 
+function getStoredColourScheme() {
+    if (!localStorage.getItem('colourScheme')) {
+        localStorage.setItem('default', 1);
+    }
+    return localStorage.getItem('colourScheme');
+}
+
 function storeInfo(difficulty, level) {
-    localStorage.setItem('difficulty', difficulty);
     const previousMax = getStoredLastLevel(difficulty);
     if (level > previousMax) localStorage.setItem('level' + difficulty, level);
 }
+
+function storeOptions(difficulty, colourScheme) {
+    localStorage.setItem('difficulty', difficulty);
+    localStorage.setItem('colourScheme', colourScheme);
+}
+/* end storage */
 
 function mapDifficultyToWords(difficulty) {
     switch (difficulty) {
@@ -104,17 +117,28 @@ function mapDifficultyToWords(difficulty) {
 }
 
 function initialiseControls() {
+    const selectedColourScheme = getStoredColourScheme();
     const colourSelect = document.getElementById("colourSelect");
     const colours = ColourScheme.allSchemes;
     for (const colour of colours) {
-        addOption(colourSelect, colour.name);
+        addOption(colourSelect, colour.name, colour.name == selectedColourScheme);
     }
 }
 
-function addOption(select, itemText) {
+function addOption(select, itemText, selected) {
     const opt = document.createElement('option');
     opt.text = itemText;
+    opt.selected = selected;
     select.add(opt);
+}
+
+function startNewGame() {
+    document.getElementById("welcome").classList.add('hidden');
+    document.getElementById("congratulate").classList.remove('hidden');
+    newPuzzle();
+
+    const colourSelect = document.getElementById("colourSelect").value;
+    storeOptions(currentDifficulty, colourSelect);
 }
 
 function attachEvents() {
@@ -130,9 +154,7 @@ function attachEvents() {
     }, false);
 
     document.getElementById("startButton").addEventListener('click', function(event) {
-        document.getElementById("welcome").classList.add('hidden');
-        document.getElementById("congratulate").classList.remove('hidden');
-        newPuzzle();
+        startNewGame();
     }, false);
 
     document.getElementById("undoButton").addEventListener('click', function(event) {

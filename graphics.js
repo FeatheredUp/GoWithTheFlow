@@ -5,6 +5,8 @@ class Graphics {
     #canvas;
     #context;
     #cellSize;
+    #maxWidth = 800;
+    #maxHeight = 800;
     #leftMargin = 10;
     #topMargin = 10;
     #rightMargin = 10;
@@ -24,6 +26,9 @@ class Graphics {
 
         this.#effectiveWidth = (this.#cellSize * puzzle.colCount) + this.#leftMargin + this.#rightMargin;
         this.#effectiveHeight = (this.#cellSize * puzzle.rowCount) + this.#topMargin + this.#bottomMargin;
+
+        this.#canvas.width = this.#effectiveWidth;
+        this.#canvas.height = this.#effectiveHeight;
 
         this.#addPieces(puzzle.pieces);
 
@@ -45,9 +50,6 @@ class Graphics {
 
     // Render the puzzle area
     render() {
-        this.#context.fillStyle = 'white';
-        this.#context.fillRect(0, 0, this.#canvas.width, this.#canvas.height);
-
         this.#context.fillStyle = this.#options.colourScheme.back;
         this.#context.fillRect(0, 0, this.#effectiveWidth, this.#effectiveHeight);
 
@@ -92,8 +94,8 @@ class Graphics {
 
     // Calculate the cell size
     #getCellSize(colCount, rowCount) {
-        const cellWidth = (this.#canvas.width - this.#leftMargin - this.#rightMargin) / colCount;
-        const cellHeight = (this.#canvas.height - this.#topMargin - this.#bottomMargin) / rowCount;
+        const cellWidth = (this.#maxWidth - this.#leftMargin - this.#rightMargin) / colCount;
+        const cellHeight = (this.#maxHeight - this.#topMargin - this.#bottomMargin) / rowCount;
 
         return Math.min(cellWidth, cellHeight);
     }
@@ -160,10 +162,19 @@ class Shape {
 
         // The flow 'start' indicator
         if (this.#isFlowStart) {
-            this.#context.fillStyle = this.#colours.isFlowStart;
-            this.#context.beginPath();
-            this.#context.arc(this.centre.x, this.centre.y, 5, 0, 2 * Math.PI);
-            this.#context.fill();
+            const diamondWidth = 10;
+            const diamondHeight = 15;
+            let diamond = new Path2D();
+            diamond.moveTo(this.centre.x, this.centre.y - diamondHeight);
+            diamond.lineTo(this.centre.x + diamondWidth, this.centre.y);
+            diamond.lineTo(this.centre.x, this.centre.y + diamondHeight);
+            diamond.lineTo(this.centre.x - diamondWidth, this.centre.y);
+            diamond.closePath();
+            this.#context.fillStyle = this.#colours.flowStart;
+            this.#context.lineWidth = 3;
+            this.#context.strokeStyle = this.#colours.flow;
+            this.#context.fill(diamond);
+            this.#context.stroke(diamond);
         }
     }
 }
