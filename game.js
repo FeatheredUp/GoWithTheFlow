@@ -11,7 +11,8 @@ function congratulate() {
     document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
     document.getElementById("completeMinimumMoveCount").innerText = graphics.puzzle.minSolveCount;
 
-    storeInfo(currentDifficulty, currentLevel);
+    Storage.updateDifficulty(currentDifficulty);
+    Storage.updateLevel(currentDifficulty, currentLevel);
     showChooseScreen(currentDifficulty, currentLevel+1);
 }
 
@@ -45,9 +46,9 @@ function showGameScreen() {
 }
 
 function showChooseScreen(difficulty, level) {
-    if (!difficulty) difficulty = getStoredDifficulty();
+    if (!difficulty) difficulty = Storage.getDifficulty();
 
-    let maxLevel = getStoredLastLevel(difficulty) + 1;
+    let maxLevel = Storage.getLevel(difficulty) + 1;
     if (!level) level = maxLevel;
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = level;
@@ -61,45 +62,11 @@ function showChooseScreen(difficulty, level) {
 }
 
 function changeLevelSlider(difficulty) {
-    let maxLevel = getStoredLastLevel(difficulty) + 1;
+    let maxLevel = Storage.getLevel(difficulty) + 1;
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = maxLevel;
     document.getElementById("levelValue").innerText = maxLevel;
 }
-
-/* Storage */
-function getStoredDifficulty() {
-    if (!localStorage.getItem('difficulty')) {
-        localStorage.setItem('difficulty', 1);
-    }
-    return parseInt(localStorage.getItem('difficulty'));
-}
-
-function getStoredLastLevel(difficulty) {
-    const key = 'level' + difficulty;
-    if (!localStorage.getItem(key)) {
-        localStorage.setItem(key, 0);
-    }
-    return parseInt(localStorage.getItem(key));
-}
-
-function getStoredColourScheme() {
-    if (!localStorage.getItem('colourScheme')) {
-        localStorage.setItem('default', 1);
-    }
-    return localStorage.getItem('colourScheme');
-}
-
-function storeInfo(difficulty, level) {
-    const previousMax = getStoredLastLevel(difficulty);
-    if (level > previousMax) localStorage.setItem('level' + difficulty, level);
-}
-
-function storeOptions(difficulty, colourScheme) {
-    localStorage.setItem('difficulty', difficulty);
-    localStorage.setItem('colourScheme', colourScheme);
-}
-/* end storage */
 
 function mapDifficultyToWords(difficulty) {
     switch (difficulty) {
@@ -117,7 +84,7 @@ function mapDifficultyToWords(difficulty) {
 }
 
 function initialiseControls() {
-    const selectedColourScheme = getStoredColourScheme();
+    const selectedColourScheme = Storage.getColourScheme();
     const colourSelect = document.getElementById("colourSelect");
     const colours = ColourScheme.allSchemes;
     for (const colour of colours) {
@@ -138,7 +105,8 @@ function startNewGame() {
     newPuzzle();
 
     const colourSelect = document.getElementById("colourSelect").value;
-    storeOptions(currentDifficulty, colourSelect);
+    Storage.updateDifficulty(currentDifficulty);
+    Storage.updateColourScheme(colourSelect);
 }
 
 function attachEvents() {
