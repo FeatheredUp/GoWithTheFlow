@@ -1,12 +1,4 @@
-// returns a whole number between min and max (both inclusive).  I.e. what 'pick a number between 1 and 10' means.
-function getRandomValue(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
-// represents a direction: left, right, up or down, and allows operations on pieces related to those directions.
-class Direction {
+class TriangleDirection {
     static left  = { dcol: -1, drow:  0};
     static right = { dcol:  1, drow:  0};
     static up    = { dcol:  0, drow: -1};
@@ -16,10 +8,10 @@ class Direction {
     static getRandomValidDirection(piece) {
         let possibles = [];
 
-        if (Direction.#isDirectionPossible(piece, Direction.left))  possibles.push(Direction.left);
-        if (Direction.#isDirectionPossible(piece, Direction.right)) possibles.push(Direction.right);
-        if (Direction.#isDirectionPossible(piece, Direction.up))    possibles.push(Direction.up);
-        if (Direction.#isDirectionPossible(piece, Direction.down))  possibles.push(Direction.down);
+        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.left))  possibles.push(TriangleDirection.left);
+        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.right)) possibles.push(TriangleDirection.right);
+        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.up))    possibles.push(TriangleDirection.up);
+        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.down))  possibles.push(TriangleDirection.down);
 
         if (possibles.length === 0) return null;
 
@@ -29,35 +21,36 @@ class Direction {
 
     // set 'piece' to have access on the specified side
     static setPieceDirection(piece, dir) {
-        if (dir == Direction.left) piece.left = true;
-        if (dir == Direction.right) piece.right = true;
-        if (dir == Direction.up) piece.up = true;
-        if (dir == Direction.down) piece.down = true;
+        if (dir == TriangleDirection.left) piece.left = true;
+        if (dir == TriangleDirection.right) piece.right = true;
+        if (dir == TriangleDirection.up) piece.up = true;
+        if (dir == TriangleDirection.down) piece.down = true;
     }
 
     // set 'piece' to have access on the _oppositie_ side.
     static setPieceOppositeDirection(piece, dir) {
-        if (dir == Direction.left) piece.right = true;
-        if (dir == Direction.right) piece.left = true;
-        if (dir == Direction.up) piece.down = true;
-        if (dir == Direction.down) piece.up = true;
+        if (dir == TriangleDirection.left) piece.right = true;
+        if (dir == TriangleDirection.right) piece.left = true;
+        if (dir == TriangleDirection.up) piece.down = true;
+        if (dir == TriangleDirection.down) piece.up = true;
     }
 
     // is the direction possible
     static #isDirectionPossible(piece, dir) {
+        if (piece.pointUp && dir == TriangleDirection.up) return false;
+        if (!piece.pointUp && dir == TriangleDirection.down) return false;
         const next = piece.findNeighbour(dir);
         if (next == undefined) return false;
         return !(next.left || next.right || next.up || next.down); 
     }
 }
 
-// represents the whole puzzle.
-class Puzzle {
+class TrianglePuzzle {
     pieces = [];
     flowStart;
     colCount;
     rowCount;
-    minSolveCount;
+    minSolveCount = 0;
     moveCount;
     history = [];
 
@@ -75,6 +68,7 @@ class Puzzle {
         this.calculateFlow();
     }
 
+    // Get the size based on the difficulty level, with some randomness.
     #getSizeFromDifficulty(difficulty) {
         switch (difficulty) {
             case 1:
@@ -102,7 +96,9 @@ class Puzzle {
     #makePuzzle() {
         for (let col = 0; col < this.colCount; col++) {
             for (let row = 0; row < this.rowCount; row++) {
-                this.pieces.push(new Piece(this, row, col, false, false, false, false));
+                // point up if row and col are both even, or both are odd.
+                const pointUp =  col % 2 == row % 2;
+                this.pieces.push(new TrianglePiece(this, row, col, false, false, false, false, pointUp));
             }
         }
 
@@ -114,22 +110,22 @@ class Puzzle {
     // Recursively called - creates a track from the current track to any
     // unoccupied squares, and backtracks if necessary, until all squares are filled.
     #makeTracks(piece) {
-        let dir = Direction.getRandomValidDirection(piece);
+        let dir = TriangleDirection.getRandomValidDirection(piece);
         while (dir !== null) {
             let neighbour = piece.findNeighbour(dir);
-            Direction.setPieceDirection(piece, dir);
-            Direction.setPieceOppositeDirection(neighbour, dir);
+            TriangleDirection.setPieceDirection(piece, dir);
+            TriangleDirection.setPieceOppositeDirection(neighbour, dir);
             this.#makeTracks(neighbour);
 
-            dir = Direction.getRandomValidDirection(piece);
+            dir = TriangleDirection.getRandomValidDirection(piece);
         }
     }
 
-    // Turns each piece around randomly between 0 and 3 times.
+    // Turns each piece around randomly between 0 and 2 times.
     #mixUp() {
         let count = 0;
         for (const piece of this.pieces) {
-            const rotations = getRandomValue(0, 3);
+            const rotations = getRandomValue(0, 2);
             count+= this.#getUndoCount(piece, rotations);
             for (let i = 0; i < rotations; i++) {
                 piece.rotate();
@@ -141,9 +137,8 @@ class Puzzle {
     // Get the number of rotations needed to turn this piece back to the correct orientation.
     #getUndoCount(piece, rotations) {
         if (rotations === 0) return 0;
-        if (piece.countDirections == 4) return 0;
-        let count = 4 - rotations;
-        if (piece.straight && count >= 2)  count -= 2;
+        if (piece.countDirections == 3) return 0;
+        let count = 3 - rotations;
         return count;
     }
 
@@ -161,19 +156,19 @@ class Puzzle {
         piece.flow = true;
 
         if (piece.left) {
-            let next = piece.findNeighbour(Direction.left);
+            let next = piece.findNeighbour(TriangleDirection.left);
             if (next && next.right) this.#followFlow(next);
         }
         if (piece.up) {
-            let next = piece.findNeighbour(Direction.up);
+            let next = piece.findNeighbour(TriangleDirection.up);
             if (next && next.down) this.#followFlow(next);
         }
         if (piece.right) {
-            let next = piece.findNeighbour(Direction.right);
+            let next = piece.findNeighbour(TriangleDirection.right);
             if (next && next.left) this.#followFlow(next);
         }
         if (piece.down) {
-            let next = piece.findNeighbour(Direction.down);
+            let next = piece.findNeighbour(TriangleDirection.down);
             if (next && next.up) this.#followFlow(next);
         }
     }
@@ -193,8 +188,8 @@ class Puzzle {
     }
 }
 
-// Represents a single square of the puzzle.
-class Piece {
+// Represents a single piece of the puzzle.
+class TrianglePiece {
     puzzle;
     row;
     col;
@@ -202,10 +197,11 @@ class Piece {
     up;
     right;
     down;
+    pointUp;
     flow;
     touchCount;
 
-    constructor(puzzle, row, col, left, up, right, down) {
+    constructor(puzzle, row, col, left, up, right, down, pointUp) {
         this.puzzle = puzzle;
         this.row = row;
         this.col = col;
@@ -213,6 +209,7 @@ class Piece {
         this.up = up;
         this.right = right;
         this.down = down;
+        this.pointUp = pointUp;
 
         this.flow = false;
         this.touchCount = 0;
@@ -237,20 +234,32 @@ class Piece {
 
     // The piece is rotated clockwise, either as part of the setup, or by the player.
     rotate() {
-        const originalRight = this.right;
-        this.right = this.up;
-        this.up = this.left;
-        this.left = this.down;
-        this.down = originalRight;
+        if (this.pointUp) {
+            const originalLeft = this.left;
+            this.left = this.down;
+            this.down = this.right;
+            this.right = originalLeft;
+        } else {
+            const originalLeft = this.left;
+            this.left = this.right;
+            this.right = this.up;
+            this.up = originalLeft;
+        }
     }
 
     // The piece is rotated anti-clockwise, as part of an undo.
     unrotate() {
-        const originalLeft = this.left;
-        this.left = this.up;
-        this.up = this.right;
-        this.right = this.down;
-        this.down = originalLeft;
+        if (this.pointUp) {
+            const originalLeft = this.left;
+            this.left = this.right;
+            this.right = this.down;
+            this.down = originalLeft;
+        } else {
+            const originalLeft = this.left;
+            this.left = this.up;
+            this.up = this.right;
+            this.right = originalLeft;
+        }
     }
 
     // Find the neighbour of this piece in the specified direction (this could be null if it's at the edge)
@@ -266,13 +275,6 @@ class Piece {
         if (this.up) count += 1;
         if (this.down) count += 1;
         return count;
-    }
-
-    // Returns true if the connectors are left & right only, or up and down only.
-    get straight() {
-        if (this.left && this.right && !this.up && !this.down) return true;
-        if (!this.left && !this.right && this.up && this.down) return true;
-        return false;
     }
 
     // Returns true if the piece has been touched

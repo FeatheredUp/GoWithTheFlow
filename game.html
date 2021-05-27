@@ -1,15 +1,23 @@
 <!-- 
     TO DO
+    *) Create a html to do page to replace this
+    *) Curved line for triangle connectors.
+    *) Nicer display of congratulations
+    *) Display by how many the minimum the solve count was missed
+    *) make the square lines flow when a right angle
+    *) save difficulties and levels per shape type
+    *) add guideline option?
     *) add a tutorial
     *) invisible pipes
     *) blocked pipes
     *) rusted pipes
     *) self-rotating pipes
     *) corrupted pipes
+    *) Store score or maybe rating for each completed level?
     *) Two flows?
     *) bridge pieces?
     *) rising water (i.e. time limited)
-    *) Different shapes (triangles and hexagons)
+    *) Different shapes (hexagons)
     *) Time taken?
     *) Gather and display stats?
     *) Sounds?
@@ -21,6 +29,7 @@
     <script src="options.js"></script>
     <script src="graphics.js"></script>
     <script src="puzzle.js"></script>
+    <script src="triangle.js"></script>
     <script src="seedrandom.js"></script>
     <script src="storage.js"></script>
 </head>
@@ -28,6 +37,7 @@
     <div class="chooseScreen" id="chooseScreen">
         <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="congratulate hidden" id="congratulate">Well done! You finished in <span id="completeMoveCount"></span> turns.  The minimum was <span id="completeMinimumMoveCount"></span>.</div>
+        <div class="shapeContainer">Chooser shape <select id="shapeSelect"><option value="square" selected>Square</option><option value="triangle">Triangle</option></select></div>
         <div class="difficultyContainer">Choose difficulty <input type="range" min="1" max="5" value="1" class="difficultySlider slider" id="difficultySlider"> <span class="difficultyValue" id="difficultyValue"></span></div>
         <div class="levelContainer">Choose level <input type="range" min="1" max="10" value="10" class="levelSlider slider" id="levelSlider"> <span class="levelValue" id="levelValue"></span></div>
         <div class="colourContainer">Chooser colour scheme <select id="colourSelect"></select></div>
