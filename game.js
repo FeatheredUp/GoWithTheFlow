@@ -6,7 +6,7 @@ let canvas = document.getElementById('canvas'),
 
 initialiseControls();
 attachEvents();
-showChooseScreen(null, null, null);
+showChooseScreen();
 
 function congratulate() {
     document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
@@ -14,7 +14,7 @@ function congratulate() {
 
     Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentLevel);
-    showChooseScreen(currentShapeType, currentDifficulty, currentLevel+1);
+    showChooseScreen();
 }
 
 function newPuzzle() { 
@@ -130,6 +130,7 @@ function startNewGame() {
     const colourSelect = document.getElementById("colourSelect").value;
     Storage.updateShapeType(currentShapeType);
     Storage.updateDifficulty(currentShapeType, currentDifficulty);
+    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel - 1);
     Storage.updateColourScheme(colourSelect);
 }
 
@@ -158,7 +159,7 @@ function attachEvents() {
     }, false);
 
     document.getElementById("backButton").addEventListener('click', function(event) {
-        showChooseScreen(currentDifficulty, currentLevel);
+        showChooseScreen();
     }, false);
 
     document.getElementById("levelSlider").addEventListener('input', function(event){
