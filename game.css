@@ -3,6 +3,7 @@
 }
 
 /* Choose screen */
+
 .chooseScreen {
   font-size: 1.2em;
 }
@@ -43,6 +44,7 @@
 }
 
 /* Game Screen */
+
 .gameScreen {
   -webkit-user-select: none; 
   -moz-user-select: none; 
@@ -75,4 +77,14 @@
     position: absolute;
     left: 10px;
     top: 10px;
+}
+
+/* Finish screen */
+
+.finishScreen {
+  font-size: 1.2em;
+}
+.finishScreen .welldone {
+  font-size: 1.8em;
+  color: green;
 }
