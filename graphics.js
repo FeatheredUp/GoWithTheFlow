@@ -128,13 +128,9 @@ class Graphics {
     #isPointInTriangle(x, y, shape) {
         const as_x = x - shape.pointA.x;
         const as_y = y - shape.pointA.y;
-    
         const s_ab = (shape.pointB.x - shape.pointA.x) * as_y- (shape.pointB.y - shape.pointA.y) * as_x > 0;
-    
         if ((shape.pointC.x - shape.pointA.x) * as_y - (shape.pointC.y - shape.pointA.y) * as_x > 0 == s_ab) return false;
-    
         if ((shape.pointC.x - shape.pointB.x) * (y-shape.pointB.y) - (shape.pointC.y - shape.pointB.y) * (x-shape.pointB.x) > 0 != s_ab) return false;
-    
         return true;
     }
 }
@@ -181,7 +177,7 @@ class Square {
 
         //The connectors
         this.#context.strokeStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
-        this.#context.lineWidth = 12;
+        this.#context.lineWidth = this.width / 6;
         this.#context.lineJoin = 'bevel';
         this.#context.lineCap = 'butt';
 
@@ -206,8 +202,8 @@ class Square {
 
         // The flow 'start' indicator
         if (this.#isFlowStart) {
-            const diamondWidth = 10;
-            const diamondHeight = 15;
+            const diamondWidth = this.width / 12;
+            const diamondHeight = this.height / 6;
             this.#context.beginPath();
             this.#context.moveTo(this.centre.x, this.centre.y - diamondHeight);
             this.#context.lineTo(this.centre.x + diamondWidth, this.centre.y);
@@ -215,7 +211,7 @@ class Square {
             this.#context.lineTo(this.centre.x - diamondWidth, this.centre.y);
             this.#context.closePath();
             this.#context.fillStyle = this.#colours.flowStart;
-            this.#context.lineWidth = 3;
+            this.#context.lineWidth = this.width / 100;
             this.#context.strokeStyle = this.#colours.flow;
             this.#context.fill();
             this.#context.stroke();
@@ -238,7 +234,8 @@ class Square {
 
         this.#context.fillStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
         this.#context.beginPath();
-        this.#context.arc(this.centre.x, this.centre.y, 10, 0, 2 * Math.PI);
+        const radius = this.width / 7;
+        this.#context.arc(this.centre.x, this.centre.y, radius, 0, 2 * Math.PI);
         this.#context.closePath();
         this.#context.fill();
     }
@@ -287,7 +284,6 @@ class Triangle {
 
     // Render this shape
     render() {
-        // Just draw the triangle for now...
         this.#context.strokeStyle = this.#colours.noFlow;
         this.#context.lineWidth = 1;
         this.#context.beginPath();
@@ -306,7 +302,7 @@ class Triangle {
         var downPos = { x: this.centre.x, y: this.end.y};
 
         this.#context.strokeStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
-        this.#context.lineWidth = 12;
+        this.#context.lineWidth = this.width / 8;
         this.#context.lineJoin = 'bevel';
         this.#context.lineCap = 'butt';
 
@@ -326,8 +322,8 @@ class Triangle {
 
         // The flow 'start' indicator
         if (this.#isFlowStart) {
-            const diamondWidth = 10;
-            const diamondHeight = 15;
+            const diamondWidth = this.width / 12;
+            const diamondHeight = this.height / 6;
             this.#context.beginPath();
             this.#context.moveTo(this.centre.x, this.centre.y - diamondHeight);
             this.#context.lineTo(this.centre.x + diamondWidth, this.centre.y);
@@ -335,7 +331,7 @@ class Triangle {
             this.#context.lineTo(this.centre.x - diamondWidth, this.centre.y);
             this.#context.closePath();
             this.#context.fillStyle = this.#colours.flowStart;
-            this.#context.lineWidth = 3;
+            this.#context.lineWidth = this.width / 100;
             this.#context.strokeStyle = this.#colours.flow;
             this.#context.fill();
             this.#context.stroke();
@@ -358,7 +354,8 @@ class Triangle {
 
         this.#context.fillStyle = this.piece.flow ? this.#colours.flow : this.#colours.noFlow;
         this.#context.beginPath();
-        this.#context.arc(this.centre.x, this.centre.y, 10, 0, 2 * Math.PI);
+        const radius = this.width / 7;
+        this.#context.arc(this.centre.x, this.centre.y, radius, 0, 2 * Math.PI);
         this.#context.closePath();
         this.#context.fill();
     }
