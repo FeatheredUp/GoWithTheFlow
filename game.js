@@ -24,6 +24,7 @@ function newPuzzle() {
     const colourScheme = document.getElementById('colourSelect').value;
 
     document.getElementById("gameLevel").innerText = currentLevel;
+    document.getElementById("gameDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
 
     let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel): new TrianglePuzzle(currentDifficulty, currentLevel);
     graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
