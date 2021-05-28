@@ -1,31 +1,32 @@
 let canvas = document.getElementById('canvas'),
     graphics,
+    currentShapeType,
     currentDifficulty,
     currentLevel; 
 
 initialiseControls();
 attachEvents();
-showChooseScreen(null, null);
+showChooseScreen(null, null, null);
 
 function congratulate() {
     document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
     document.getElementById("completeMinimumMoveCount").innerText = graphics.puzzle.minSolveCount;
 
-    Storage.updateDifficulty(currentDifficulty);
-    Storage.updateLevel(currentDifficulty, currentLevel);
-    showChooseScreen(currentDifficulty, currentLevel+1);
+    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
+    Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentLevel);
+    showChooseScreen(currentShapeType, currentDifficulty, currentLevel+1);
 }
 
 function newPuzzle() { 
-    const shapeType = document.getElementById("shapeSelect").value;
+    currentShapeType = document.getElementById("shapeSelect").value;
     currentDifficulty = parseInt(document.getElementById("difficultySlider").value)
     currentLevel = parseInt(document.getElementById("levelSlider").value);
     const colourScheme = document.getElementById('colourSelect').value;
 
     document.getElementById("gameLevel").innerText = currentLevel;
 
-    let puzzle = (shapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel): new TrianglePuzzle(currentDifficulty, currentLevel);
-    graphics = new Graphics(canvas, puzzle, colourScheme, shapeType);
+    let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel): new TrianglePuzzle(currentDifficulty, currentLevel);
+    graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
     render(graphics);
     showGameScreen();
 }
@@ -47,31 +48,47 @@ function showGameScreen() {
     document.getElementById("gameScreen").classList.remove('hidden');
 }
 
-function showChooseScreen(difficulty, level) {
-    if (!difficulty) difficulty = Storage.getDifficulty();
+function showChooseScreen() {
+    const shapeType = Storage.getShapeType();
+    const difficulty = Storage.getDifficulty(shapeType);
+    const maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
+    const level = Storage.getLevel(shapeType, difficulty) + 1;
 
-    let maxLevel = Storage.getLevel(difficulty) + 1;
-    if (!level) level = maxLevel;
+    document.getElementById("shapeSelect").value = shapeType;
+    document.getElementById("difficultySlider").value = difficulty;
+    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = level;
     document.getElementById("levelValue").innerText = level;
-
-    document.getElementById("difficultySlider").value = difficulty;
-    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
 
     document.getElementById("gameScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.remove('hidden');
 }
 
-function changeLevelSlider(difficulty) {
-    let maxLevel = Storage.getLevel(difficulty) + 1;
-    document.getElementById("levelSlider").max = maxLevel;
-    document.getElementById("levelSlider").value = maxLevel;
-    document.getElementById("levelValue").innerText = maxLevel;
+function shapeTypeUpdated() {
+    const shapeType = document.getElementById("shapeSelect").value;
+    let difficulty = Storage.getDifficulty(shapeType);
+    document.getElementById('difficultySlider').value = difficulty;
+    difficultySliderUpdated();
 }
 
-function changeShapeSelect(shapeType) {
-    
+function difficultySliderUpdated() {
+    const difficulty = document.getElementById("difficultySlider").value;
+    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(parseInt(difficulty));
+
+    // display the levels for this updated difficulty
+    const shapeType = document.getElementById("shapeSelect").value;
+    let maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
+    let level = Storage.getLevel(shapeType, difficulty) + 1;
+
+    document.getElementById("levelSlider").max = maxLevel;
+    document.getElementById("levelSlider").value = level;
+    levelUpdated();
+}
+
+function levelUpdated() {
+    const level = document.getElementById("levelSlider").value;
+    document.getElementById("levelValue").innerText = level;
 }
 
 function mapDifficultyToWords(difficulty) {
@@ -111,7 +128,8 @@ function startNewGame() {
     newPuzzle();
 
     const colourSelect = document.getElementById("colourSelect").value;
-    Storage.updateDifficulty(currentDifficulty);
+    Storage.updateShapeType(currentShapeType);
+    Storage.updateDifficulty(currentShapeType, currentDifficulty);
     Storage.updateColourScheme(colourSelect);
 }
 
@@ -148,11 +166,10 @@ function attachEvents() {
     }, false);
 
     document.getElementById("difficultySlider").addEventListener('input', function(event){
-        document.getElementById("difficultyValue").innerText = mapDifficultyToWords(parseInt(this.value));
-        changeLevelSlider(parseInt(this.value));
+        difficultySliderUpdated();
     }, false);
 
     document.getElementById("shapeSelect").addEventListener('input', function(event){
-        changeShapeSelect(this.value);
+        shapeTypeUpdated();
     }, false);
 }
