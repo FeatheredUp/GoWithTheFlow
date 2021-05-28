@@ -43,6 +43,12 @@
 }
 
 /* Game Screen */
+.gameScreen {
+  -webkit-user-select: none; 
+  -moz-user-select: none; 
+  user-select: none; 
+}
+
 .gameScreen .levelDisplayContainer {
     width: 800px;
     font-size: 1.8em;

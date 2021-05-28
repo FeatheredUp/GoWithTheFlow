@@ -345,7 +345,8 @@ class Triangle {
     drawConnector(firstPos, secondPos) {
         this.#context.beginPath();
         this.#context.moveTo(firstPos.x, firstPos.y);
-        this.#context.lineTo(secondPos.x, secondPos.y);
+        const radius = this.width / 2;
+        this.#context.arcTo(this.centre.x, this.centre.y, secondPos.x, secondPos.y, radius);
         this.#context.stroke();
     }
 
