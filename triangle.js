@@ -78,9 +78,9 @@ class TrianglePuzzle {
             case 3:
                 return { colCount: getRandomValue(5, 7), rowCount: getRandomValue(7, 9) };
             case 4:
-                return { colCount: getRandomValue(9, 11), rowCount: getRandomValue(11, 13) };
+                return { colCount: getRandomValue(8, 9), rowCount: getRandomValue(10, 11) };
             case 5:
-                return { colCount: getRandomValue(14, 16), rowCount: getRandomValue(16, 18) };
+                return { colCount: getRandomValue(10, 11), rowCount: getRandomValue(12, 13) };
         }
     }
 
