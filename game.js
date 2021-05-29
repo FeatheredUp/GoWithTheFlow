@@ -8,16 +8,48 @@ initialiseControls();
 attachEvents();
 showChooseScreen();
 
+function startNewGame() {
+    playSelectedLevel();
+
+    // Store the options that are set in playSelectedLevel
+    const colourSelect = document.getElementById("colourSelect").value;
+    Storage.updateShapeType(currentShapeType);
+    Storage.updateDifficulty(currentShapeType, currentDifficulty);
+    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel - 1);
+    Storage.updateColourScheme(colourSelect);
+}
+
+function repeatGame() {
+    const shapeType = Storage.getShapeType();
+    const difficulty = Storage.getDifficulty(shapeType);
+    const level = Storage.getLevel(shapeType, difficulty);
+    document.getElementById("levelSlider").value = level;
+    levelUpdated();
+    playSelectedLevel();
+}
+
 function congratulate() {
     document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
     document.getElementById("completeMinimumMoveCount").innerText = graphics.puzzle.minSolveCount;
 
+    // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentLevel);
-    showChooseScreen();
+    showFinishScreen();
 }
 
-function newPuzzle() { 
+function clickCanvas(x, y){
+    let hit = graphics.clickAtPoint(x, y);
+
+    if (hit) {
+        render();
+        if (graphics.puzzle.isFinished()) {
+            congratulate();
+        }
+    }
+}
+
+function playSelectedLevel() { 
     currentShapeType = document.getElementById("shapeSelect").value;
     currentDifficulty = parseInt(document.getElementById("difficultySlider").value)
     currentLevel = parseInt(document.getElementById("levelSlider").value);
@@ -32,6 +64,20 @@ function newPuzzle() {
     showGameScreen();
 }
 
+function updateChooseScreen() {
+    const shapeType = Storage.getShapeType();
+    const difficulty = Storage.getDifficulty(shapeType);
+    const maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
+    const level = Storage.getLevel(shapeType, difficulty) + 1;
+
+    document.getElementById("shapeSelect").value = shapeType;
+    document.getElementById("difficultySlider").value = difficulty;
+    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
+    document.getElementById("levelSlider").max = maxLevel;
+    document.getElementById("levelSlider").value = level;
+    document.getElementById("levelValue").innerText = level;
+}
+
 function undoLastMove() {
     graphics.undo();
     render(graphics);
@@ -44,27 +90,31 @@ function render() {
     document.getElementById('minMoveCount').innerHTML = minSolveCount;
 }
 
+/* Show the selected screen and hide the others */
+
 function showGameScreen() {
+    document.getElementById("finishScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.add('hidden');
     document.getElementById("gameScreen").classList.remove('hidden');
 }
 
 function showChooseScreen() {
-    const shapeType = Storage.getShapeType();
-    const difficulty = Storage.getDifficulty(shapeType);
-    const maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
-    const level = Storage.getLevel(shapeType, difficulty) + 1;
-
-    document.getElementById("shapeSelect").value = shapeType;
-    document.getElementById("difficultySlider").value = difficulty;
-    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
-    document.getElementById("levelSlider").max = maxLevel;
-    document.getElementById("levelSlider").value = level;
-    document.getElementById("levelValue").innerText = level;
+    updateChooseScreen();
 
     document.getElementById("gameScreen").classList.add('hidden');
+    document.getElementById("finishScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.remove('hidden');
 }
+
+function showFinishScreen() {
+    updateChooseScreen();
+
+    document.getElementById("gameScreen").classList.add('hidden');
+    document.getElementById("chooseScreen").classList.add('hidden');
+    document.getElementById("finishScreen").classList.remove('hidden');
+}
+
+/* Respond to selection of shape, difficulty and level */
 
 function shapeTypeUpdated() {
     const shapeType = document.getElementById("shapeSelect").value;
@@ -107,6 +157,8 @@ function mapDifficultyToWords(difficulty) {
     }
 }
 
+/* initialise drop downs */ 
+
 function initialiseControls() {
     const selectedColourScheme = Storage.getColourScheme();
     const colourSelect = document.getElementById("colourSelect");
@@ -123,28 +175,11 @@ function addOption(select, itemText, selected) {
     select.add(opt);
 }
 
-function startNewGame() {
-    document.getElementById("welcome").classList.add('hidden');
-    document.getElementById("congratulate").classList.remove('hidden');
-    newPuzzle();
-
-    const colourSelect = document.getElementById("colourSelect").value;
-    Storage.updateShapeType(currentShapeType);
-    Storage.updateDifficulty(currentShapeType, currentDifficulty);
-    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel - 1);
-    Storage.updateColourScheme(colourSelect);
-}
+/* Attach events to appropriate functions */
 
 function attachEvents() {
     canvas.addEventListener('click', function (event) {
-        let hit = graphics.clickAtPoint(event.pageX, event.pageY);
-
-        if (hit) {
-            render();
-            if (graphics.puzzle.isFinished()) {
-                congratulate();
-            }
-        }
+        clickCanvas(event.pageX, event.pageY);
     }, false);
 
     document.getElementById("startButton").addEventListener('click', function(event) {
@@ -156,15 +191,27 @@ function attachEvents() {
     }, false);
 
     document.getElementById("restartButton").addEventListener('click', function(event) {
-        newPuzzle();
+        playSelectedLevel();
     }, false);
 
     document.getElementById("backButton").addEventListener('click', function(event) {
         showChooseScreen();
     }, false);
 
+    document.getElementById("repeatButton").addEventListener('click', function(event) {
+        repeatGame();
+    }, false);
+
+    document.getElementById("nextLevelButton").addEventListener('click', function(event) {
+        startNewGame();
+    }, false);
+
+    document.getElementById("returnToChooseButton").addEventListener('click', function(event) {
+        showChooseScreen();
+    }, false);
+
     document.getElementById("levelSlider").addEventListener('input', function(event){
-        document.getElementById("levelValue").innerText = this.value;
+        levelUpdated();
     }, false);
 
     document.getElementById("difficultySlider").addEventListener('input', function(event){

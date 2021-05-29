@@ -8,10 +8,10 @@ class TriangleDirection {
     static getRandomValidDirection(piece) {
         let possibles = [];
 
-        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.left))  possibles.push(TriangleDirection.left);
-        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.right)) possibles.push(TriangleDirection.right);
-        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.up))    possibles.push(TriangleDirection.up);
-        if (TriangleDirection.#isDirectionPossible(piece, TriangleDirection.down))  possibles.push(TriangleDirection.down);
+        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.left))  possibles.push(TriangleDirection.left);
+        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.right)) possibles.push(TriangleDirection.right);
+        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.up))    possibles.push(TriangleDirection.up);
+        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.down))  possibles.push(TriangleDirection.down);
 
         if (possibles.length === 0) return null;
 
@@ -36,7 +36,7 @@ class TriangleDirection {
     }
 
     // is the direction possible
-    static #isDirectionPossible(piece, dir) {
+    static isDirectionPossible(piece, dir) {
         if (piece.pointUp && dir == TriangleDirection.up) return false;
         if (!piece.pointUp && dir == TriangleDirection.down) return false;
         const next = piece.findNeighbour(dir);
@@ -57,19 +57,19 @@ class TrianglePuzzle {
     constructor(difficulty, puzzleNumber) {
         Math.seedrandom(puzzleNumber);
 
-        const size = this.#getSizeFromDifficulty(difficulty);
+        const size = this.getSizeFromDifficulty(difficulty);
         this.colCount = size.colCount;
         this.rowCount = size.rowCount;
         this.moveCount = 0;
 
-        this.#makePuzzle();
+        this.makePuzzle();
         this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
-        this.#mixUp();
+        this.mixUp();
         this.calculateFlow();
     }
 
     // Get the size based on the difficulty level, with some randomness.
-    #getSizeFromDifficulty(difficulty) {
+    getSizeFromDifficulty(difficulty) {
         switch (difficulty) {
             case 1:
                 return { colCount: 3, rowCount: 3 }; 
@@ -93,7 +93,7 @@ class TrianglePuzzle {
     }
 
     // Creates the basic structure of the track.
-    #makePuzzle() {
+    makePuzzle() {
         for (let col = 0; col < this.colCount; col++) {
             for (let row = 0; row < this.rowCount; row++) {
                 // point up if row and col are both even, or both are odd.
@@ -104,29 +104,29 @@ class TrianglePuzzle {
 
         const position = { col: getRandomValue(0, this.colCount-1), row: getRandomValue(0, this.rowCount-1) };
         const piece = this.pieces.find(({ row, col }) => row == position.row && col == position.col);
-        this.#makeTracks(piece);
+        this.makeTracks(piece);
     }
 
     // Recursively called - creates a track from the current track to any
     // unoccupied squares, and backtracks if necessary, until all squares are filled.
-    #makeTracks(piece) {
+    makeTracks(piece) {
         let dir = TriangleDirection.getRandomValidDirection(piece);
         while (dir !== null) {
             let neighbour = piece.findNeighbour(dir);
             TriangleDirection.setPieceDirection(piece, dir);
             TriangleDirection.setPieceOppositeDirection(neighbour, dir);
-            this.#makeTracks(neighbour);
+            this.makeTracks(neighbour);
 
             dir = TriangleDirection.getRandomValidDirection(piece);
         }
     }
 
     // Turns each piece around randomly between 0 and 2 times.
-    #mixUp() {
+    mixUp() {
         let count = 0;
         for (const piece of this.pieces) {
             const rotations = getRandomValue(0, 2);
-            count+= this.#getUndoCount(piece, rotations);
+            count+= this.getUndoCount(piece, rotations);
             for (let i = 0; i < rotations; i++) {
                 piece.rotate();
             }
@@ -135,7 +135,7 @@ class TrianglePuzzle {
     }
 
     // Get the number of rotations needed to turn this piece back to the correct orientation.
-    #getUndoCount(piece, rotations) {
+    getUndoCount(piece, rotations) {
         if (rotations === 0) return 0;
         if (piece.countDirections == 3) return 0;
         let count = 3 - rotations;
@@ -146,30 +146,30 @@ class TrianglePuzzle {
     calculateFlow() {
         for (const piece of this.pieces) piece.flow = false;
         let thisOne = this.pieces.find(({ row, col }) => row == this.flowStart.row && col == this.flowStart.col);
-        this.#followFlow(thisOne);
+        this.followFlow(thisOne);
     }
 
     // Called recursively - marks and follows the flow in each direction.
-    #followFlow(piece) {
+    followFlow(piece) {
         // If flow is already set, there's nothing more to do
         if (piece.flow) return;
         piece.flow = true;
 
         if (piece.left) {
             let next = piece.findNeighbour(TriangleDirection.left);
-            if (next && next.right) this.#followFlow(next);
+            if (next && next.right) this.followFlow(next);
         }
         if (piece.up) {
             let next = piece.findNeighbour(TriangleDirection.up);
-            if (next && next.down) this.#followFlow(next);
+            if (next && next.down) this.followFlow(next);
         }
         if (piece.right) {
             let next = piece.findNeighbour(TriangleDirection.right);
-            if (next && next.left) this.#followFlow(next);
+            if (next && next.left) this.followFlow(next);
         }
         if (piece.down) {
             let next = piece.findNeighbour(TriangleDirection.down);
-            if (next && next.up) this.#followFlow(next);
+            if (next && next.up) this.followFlow(next);
         }
     }
 
