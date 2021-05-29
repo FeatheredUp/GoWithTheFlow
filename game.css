@@ -1,5 +1,5 @@
 .hidden { 
-  display:none; 
+  display: none; 
 }
 
 /* Choose screen */
@@ -91,8 +91,8 @@
 
 .gameScreen button {
     margin-top: 10px;
-    width: 70px;
-    height: 35px;
+    width: 100px;
+    height: 40px;
 }
 
 .gameScreen #backButton {
@@ -106,7 +106,14 @@
 .finishScreen {
   font-size: 1.2em;
 }
+
 .finishScreen .welldone {
   font-size: 1.8em;
   color: green;
+}
+
+.finishScreen button {
+    margin-top: 10px;
+    width: 100px;
+    height: 40px;
 }

@@ -66,16 +66,8 @@ function playSelectedLevel() {
 
 function updateChooseScreen() {
     const shapeType = Storage.getShapeType();
-    const difficulty = Storage.getDifficulty(shapeType);
-    const maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
-    const level = Storage.getLevel(shapeType, difficulty) + 1;
-
     document.getElementById("shapeSelect").value = shapeType;
-    document.getElementById("difficultySlider").value = difficulty;
-    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
-    document.getElementById("levelSlider").max = maxLevel;
-    document.getElementById("levelSlider").value = level;
-    document.getElementById("levelValue").innerText = level;
+    shapeTypeUpdated()
 }
 
 function undoLastMove() {
@@ -132,6 +124,7 @@ function difficultySliderUpdated() {
     let maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
     let level = Storage.getLevel(shapeType, difficulty) + 1;
 
+    setVisibility(document.getElementById("levelContainer"), maxLevel > 1);
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = level;
     levelUpdated();
@@ -154,6 +147,14 @@ function mapDifficultyToWords(difficulty) {
             return 'Hard';
         case 5:
             return 'Challenging';
+    }
+}
+
+function setVisibility(ctrl, show) {
+    if (show) {
+        ctrl.classList.remove('hidden');
+    } else {
+        ctrl.classList.add('hidden');
     }
 }
 
