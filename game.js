@@ -34,6 +34,8 @@ function congratulate() {
     document.getElementById("completeMoveCount").innerText = stats.moves;
     document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
     document.getElementById("completeStarRating").innerText = stats.stars;
+    document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(stats.difficulty);
+    document.getElementById("completeLevel").innerText = stats.level;
 
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
