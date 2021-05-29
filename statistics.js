@@ -13,11 +13,12 @@ class LevelStatistics {
     }
 
     get stars() {
-        if (this.percent <= 0) return 5;
-        if (this.percent <= 10) return 4;
-        if (this.percent <= 30) return 3;
-        if (this.percent <= 50) return 2;
-        return 1;
+        if (this.percent <= 0) return 'S';
+        if (this.percent <= 10) return 'A';
+        if (this.percent <= 20) return 'B';
+        if (this.percent <= 30) return 'C';
+        if (this.percent <= 50) return 'D';
+        return 'E';
     }
 
     // The percentage over the minimum
