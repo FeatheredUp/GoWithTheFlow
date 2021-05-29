@@ -112,6 +112,10 @@
   color: green;
 }
 
+.finishScreen .stars {
+  font-size: 1.65em;
+  color: red;
+}
 .finishScreen button {
     margin-top: 10px;
     width: 100px;

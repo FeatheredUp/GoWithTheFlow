@@ -29,8 +29,11 @@ function repeatGame() {
 }
 
 function congratulate() {
-    document.getElementById("completeMoveCount").innerText = graphics.puzzle.moveCount;
-    document.getElementById("completeMinimumMoveCount").innerText = graphics.puzzle.minSolveCount;
+    let stats = new LevelStatistics(currentShapeType, currentDifficulty, currentLevel, graphics.puzzle.minSolveCount, graphics.puzzle.moveCount);
+
+    document.getElementById("completeMoveCount").innerText = stats.moves;
+    document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
+    document.getElementById("completeStarRating").innerText = stats.stars;
 
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
