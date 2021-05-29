@@ -31,6 +31,7 @@ function repeatGame() {
 function congratulate() {
     let stats = new LevelStatistics(currentShapeType, currentDifficulty, currentLevel, graphics.puzzle.minSolveCount, graphics.puzzle.moveCount);
 
+    document.getElementById("completeShapeType").innerText = stats.shapeType;
     document.getElementById("completeMoveCount").innerText = stats.moves;
     document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
     document.getElementById("completeStarRating").innerText = stats.stars;
