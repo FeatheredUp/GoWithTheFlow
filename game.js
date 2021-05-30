@@ -6,6 +6,7 @@ let canvas = document.getElementById('canvas'),
 
 initialiseControls();
 attachEvents();
+updateChooseScreen();
 showChooseScreen();
 
 function startNewGame() {
@@ -31,17 +32,61 @@ function repeatGame() {
 function congratulate() {
     let stats = new LevelStatistics(currentShapeType, currentDifficulty, currentLevel, graphics.puzzle.minSolveCount, graphics.puzzle.moveCount);
 
-    document.getElementById("completeShapeType").innerText = stats.shapeType;
-    document.getElementById("completeMoveCount").innerText = stats.moves;
-    document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
-    document.getElementById("completeStarRating").innerText = stats.stars;
-    document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(stats.difficulty);
-    document.getElementById("completeLevel").innerText = stats.level;
-
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentLevel);
+    Storage.updateLevelRating(currentShapeType, currentDifficulty, currentLevel, stats.rating);
+    Storage.updateLevelAttempts(currentShapeType, currentDifficulty, currentLevel);
+
+    const attempts = Storage.getLevelAttempts(currentShapeType, currentDifficulty, currentLevel);
+    let attemptText = "after " + attempts + " attempts";
+    if (attempts == 1) attemptText = "after 1 attempt";
+
+    document.getElementById("completeShapeType").innerText = stats.shapeType;
+    document.getElementById("completeMoveCount").innerText = stats.moves;
+    document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
+    document.getElementById("completeRating").innerText = stats.ratingGrade;
+    document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(stats.difficulty);
+    document.getElementById("completeLevel").innerText = stats.level;
+    document.getElementById("completeAttempts").innerText = attemptText;
     showFinishScreen();
+}
+
+function showStatistics() {
+    const shapeType = document.getElementById("shapeSelect").value;
+    const difficulty = parseInt(document.getElementById("difficultySlider").value)
+    let maxLevel = Storage.getMaxLevel(shapeType, difficulty);
+
+    document.getElementById("statisticsShapeType").innerText = shapeType;
+    document.getElementById("statisticsDifficulty").innerText = mapDifficultyToWords(difficulty);
+    setVisibility(document.getElementById("nostats"), maxLevel == 0);
+    setVisibility(document.getElementById("stats"), maxLevel != 0);
+
+    const statsTableBody = document.getElementById("statsTableBody");
+    statsTableBody.innerHTML = '';
+    for (let level=1; level<=maxLevel; level++) {
+        const rating = LevelStatistics.mapRatingToGrade(Storage.getLevelRating(shapeType, difficulty, level));
+        const attempts = Storage.getLevelAttempts(shapeType, difficulty, level);
+
+        let row = createStatsTableRow(level, rating, attempts);
+        statsTableBody.appendChild(row);
+    }
+
+    showStatisticsScreen();
+}
+
+function createStatsTableRow(level, grade, attempts) {
+    let row = document.createElement('tr');
+    row.appendChild(createStatsTableCell(level));
+    row.appendChild(createStatsTableCell(grade));
+    row.appendChild(createStatsTableCell(attempts));
+    return row;
+}
+
+function createStatsTableCell(value) {
+    let cell = document.createElement('td');
+    cell.innerText = value;
+    return cell;
 }
 
 function clickCanvas(x, y){
@@ -93,14 +138,21 @@ function render() {
 function showGameScreen() {
     document.getElementById("finishScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.add('hidden');
+    document.getElementById("statisticsScreen").classList.add('hidden');
     document.getElementById("gameScreen").classList.remove('hidden');
 }
 
-function showChooseScreen() {
-    updateChooseScreen();
+function showStatisticsScreen() {
+    document.getElementById("finishScreen").classList.add('hidden');
+    document.getElementById("chooseScreen").classList.add('hidden');
+    document.getElementById("gameScreen").classList.add('hidden');
+    document.getElementById("statisticsScreen").classList.remove('hidden');
+}
 
+function showChooseScreen() {
     document.getElementById("gameScreen").classList.add('hidden');
     document.getElementById("finishScreen").classList.add('hidden');
+    document.getElementById("statisticsScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.remove('hidden');
 }
 
@@ -109,6 +161,7 @@ function showFinishScreen() {
 
     document.getElementById("gameScreen").classList.add('hidden');
     document.getElementById("chooseScreen").classList.add('hidden');
+    document.getElementById("statisticsScreen").classList.add('hidden');
     document.getElementById("finishScreen").classList.remove('hidden');
 }
 
@@ -144,15 +197,15 @@ function levelUpdated() {
 function mapDifficultyToWords(difficulty) {
     switch (difficulty) {
         case 1:
-            return 'Trivial'; 
+            return 'trivial'; 
         case 2:
-            return 'Easy';
+            return 'easy';
         case 3:
-            return 'Medium';
+            return 'medium';
         case 4:
-            return 'Hard';
+            return 'hard';
         case 5:
-            return 'Challenging';
+            return 'challenging';
     }
 }
 
@@ -227,5 +280,13 @@ function attachEvents() {
 
     document.getElementById("shapeSelect").addEventListener('input', function(event){
         shapeTypeUpdated();
+    }, false);
+
+    document.getElementById("returnFromStatisticsButton").addEventListener('click', function(event) {
+        showChooseScreen();
+    }, false);
+
+    document.getElementById("showStatisticsButton").addEventListener('click', function(event) {
+        showStatistics();
     }, false);
 }

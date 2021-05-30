@@ -13,7 +13,12 @@
     <div class="chooseScreen" id="chooseScreen">
         <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="shapeContainer">Choose shape <select id="shapeSelect"><option value="square" selected>Square</option><option value="triangle">Triangle</option></select></div>
-        <div class="difficultyContainer">Choose difficulty <input type="range" min="1" max="5" value="1" class="difficultySlider slider" id="difficultySlider"> <span class="difficultyValue" id="difficultyValue"></span></div>
+        <div class="difficultyContainer">
+            Choose difficulty 
+            <input type="range" min="1" max="5" value="1" class="difficultySlider slider" id="difficultySlider"> 
+            <span class="difficultyValue" id="difficultyValue"></span>
+            <button id="showStatisticsButton">Statistics</button>
+        </div>
         <div class="levelContainer" id="levelContainer">Choose level <input type="range" min="1" max="10" value="10" class="levelSlider slider" id="levelSlider"> <span class="levelValue" id="levelValue"></span></div>
         <div class="colourContainer">Choose colour scheme <select id="colourSelect"></select></div>
         <button id="startButton">Start</button>
@@ -28,13 +33,28 @@
             <button id="backButton" class="gameButton">Other options</button>
         </div>
     </div>
+    <div class="statisticsScreen hidden" id="statisticsScreen">
+        <div class="statisticsHeaderContainer">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span></div> 
+        <div class="hidden" id="nostats">No information has been gathered on this difficulty yet.</div>
+        <div class="hidden" id="stats">
+            <table>
+                <thead>
+                    <th class="statsLevel">Level</th>
+                    <th class="statsGrade">Grade</th>
+                    <th class="statsAttempts">Attempts</th>
+                </thead>
+                <tbody id="statsTableBody"></tbody>
+            </table>
+        </div>
+        <button id="returnFromStatisticsButton">Return</button>
+    </div>
     <div class="finishScreen hidden" id="finishScreen">
         <div class="congratulate" id="congratulate">
             <span class="welldone">Well done!</span> 
             You have beaten <span id="completeShapeType"></span> <span id="completeDifficulty"></span> level <span id="completeLevel"></span>.
             You finished in <span id="completeMoveCount"></span> turns.  
             The minimum was <span id="completeMinimumMoveCount"></span>.
-            <span class="stars">You get <span id="completeStarRating">0</span> rating.</span>
+            <span class="rating">You get <span id="completeRating">0</span> rating <span id="completeAttempts"></span>.</span>
         </div>
         <div class="buttonBar">
             <button id="repeatButton">Repeat</button>

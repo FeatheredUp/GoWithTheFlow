@@ -2,6 +2,12 @@
   display: none; 
 }
 
+button {
+  margin-top: 10px;
+  width: 100px;
+  height: 40px;
+}
+
 /* Choose screen */
 
 .chooseScreen {
@@ -53,12 +59,6 @@
   margin-top: 10px;
 }
 
-.chooseScreen button {
-  margin-top: 10px;
-  width: 70px;
-  height: 35px;
-}
-
 .chooseScreen #startButton {
   position: relative;
   left: 10px;
@@ -89,12 +89,6 @@
     color: red;
 }
 
-.gameScreen button {
-    margin-top: 10px;
-    width: 100px;
-    height: 40px;
-}
-
 .gameScreen #backButton {
     position: absolute;
     left: 10px;
@@ -112,12 +106,33 @@
   color: green;
 }
 
-.finishScreen .stars {
+.finishScreen .rating {
   font-size: 1.65em;
   color: red;
 }
-.finishScreen button {
-    margin-top: 10px;
-    width: 100px;
-    height: 40px;
+
+/* Stats screen */
+.statisticsScreen {
+  font-size: 1.2em;
+}
+
+.statisticsScreen table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.statisticsScreen th, td {
+  text-align: left;
+  padding: 5px;
+}
+
+.statisticsScreen  tr:nth-child(even) {
+  background-color: #eee;
+}
+.statisticsScreen tr:nth-child(odd) {
+  background-color: #fff;
+}
+.statisticsScreen  th {
+  color: white;
+  background-color: black;
 }
