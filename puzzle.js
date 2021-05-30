@@ -7,19 +7,21 @@ function getRandomValue(min, max) {
 
 // represents a direction: left, right, up or down, and allows operations on pieces related to those directions.
 class Direction {
-    static left  = { dcol: -1, drow:  0};
-    static right = { dcol:  1, drow:  0};
-    static up    = { dcol:  0, drow: -1};
-    static down  = { dcol:  0, drow:  1};
+    left  = { dcol: -1, drow:  0};
+    right = { dcol:  1, drow:  0};
+    up    = { dcol:  0, drow: -1};
+    down  = { dcol:  0, drow:  1};
+
+    constructor() {}
 
     // randomly choose a direction from 'piece' to another piece that hasn't been visited.
-    static getRandomValidDirection(piece) {
+    getRandomValidDirection(piece) {
         let possibles = [];
 
-        if (Direction.isDirectionPossible(piece, Direction.left))  possibles.push(Direction.left);
-        if (Direction.isDirectionPossible(piece, Direction.right)) possibles.push(Direction.right);
-        if (Direction.isDirectionPossible(piece, Direction.up))    possibles.push(Direction.up);
-        if (Direction.isDirectionPossible(piece, Direction.down))  possibles.push(Direction.down);
+        if (this.isDirectionPossible(piece, this.left))  possibles.push(this.left);
+        if (this.isDirectionPossible(piece, this.right)) possibles.push(this.right);
+        if (this.isDirectionPossible(piece, this.up))    possibles.push(this.up);
+        if (this.isDirectionPossible(piece, this.down))  possibles.push(this.down);
 
         if (possibles.length === 0) return null;
 
@@ -28,23 +30,23 @@ class Direction {
     }
 
     // set 'piece' to have access on the specified side
-    static setPieceDirection(piece, dir) {
-        if (dir == Direction.left) piece.left = true;
-        if (dir == Direction.right) piece.right = true;
-        if (dir == Direction.up) piece.up = true;
-        if (dir == Direction.down) piece.down = true;
+    setPieceDirection(piece, dir) {
+        if (dir == this.left) piece.left = true;
+        if (dir == this.right) piece.right = true;
+        if (dir == this.up) piece.up = true;
+        if (dir == this.down) piece.down = true;
     }
 
     // set 'piece' to have access on the _oppositie_ side.
-    static setPieceOppositeDirection(piece, dir) {
-        if (dir == Direction.left) piece.right = true;
-        if (dir == Direction.right) piece.left = true;
-        if (dir == Direction.up) piece.down = true;
-        if (dir == Direction.down) piece.up = true;
+    setPieceOppositeDirection(piece, dir) {
+        if (dir == this.left) piece.right = true;
+        if (dir == this.right) piece.left = true;
+        if (dir == this.up) piece.down = true;
+        if (dir == this.down) piece.up = true;
     }
 
     // is the direction possible
-    static isDirectionPossible(piece, dir) {
+    isDirectionPossible(piece, dir) {
         const next = piece.findNeighbour(dir);
         if (next == undefined) return false;
         return !(next.left || next.right || next.up || next.down); 
@@ -60,6 +62,7 @@ class Puzzle {
     minSolveCount;
     moveCount;
     history = [];
+    direction = new Direction();
 
     constructor(difficulty, puzzleNumber) {
         Math.seedrandom(puzzleNumber);
@@ -114,14 +117,14 @@ class Puzzle {
     // Recursively called - creates a track from the current track to any
     // unoccupied squares, and backtracks if necessary, until all squares are filled.
     makeTracks(piece) {
-        let dir = Direction.getRandomValidDirection(piece);
+        let dir = this.direction.getRandomValidDirection(piece);
         while (dir !== null) {
             let neighbour = piece.findNeighbour(dir);
-            Direction.setPieceDirection(piece, dir);
-            Direction.setPieceOppositeDirection(neighbour, dir);
+            this.direction.setPieceDirection(piece, dir);
+            this.direction.setPieceOppositeDirection(neighbour, dir);
             this.makeTracks(neighbour);
 
-            dir = Direction.getRandomValidDirection(piece);
+            dir = this.direction.getRandomValidDirection(piece);
         }
     }
 
@@ -161,19 +164,19 @@ class Puzzle {
         piece.flow = true;
 
         if (piece.left) {
-            let next = piece.findNeighbour(Direction.left);
+            let next = piece.findNeighbour(this.direction.left);
             if (next && next.right) this.followFlow(next);
         }
         if (piece.up) {
-            let next = piece.findNeighbour(Direction.up);
+            let next = piece.findNeighbour(this.direction.up);
             if (next && next.down) this.followFlow(next);
         }
         if (piece.right) {
-            let next = piece.findNeighbour(Direction.right);
+            let next = piece.findNeighbour(this.direction.right);
             if (next && next.left) this.followFlow(next);
         }
         if (piece.down) {
-            let next = piece.findNeighbour(Direction.down);
+            let next = piece.findNeighbour(this.direction.down);
             if (next && next.up) this.followFlow(next);
         }
     }

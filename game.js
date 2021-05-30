@@ -222,7 +222,8 @@ function setVisibility(ctrl, show) {
 function initialiseControls() {
     const selectedColourScheme = Storage.getColourScheme();
     const colourSelect = document.getElementById("colourSelect");
-    const colours = ColourScheme.allSchemes;
+     let options = new Options('default');
+    const colours = options.allSchemes;
     for (const colour of colours) {
         addOption(colourSelect, colour.name, colour.name == selectedColourScheme);
     }

@@ -24,13 +24,6 @@ class Storage {
         return Storage.getValue('colourScheme', 'default');
     }
 
-    // static getLevelRating(shapeType, difficulty) {
-    //     const key = 'ratings_' + shapeType + '_' + difficulty;
-    //     return Storage.getValue(key, '');
-    // }
-
-
-
     static getLevelRating(shapeType, difficulty, level) {
         const key = 'ratings_' + shapeType + '_' + difficulty + '_' + level;
         return Storage.getValue(key, 'U');
@@ -67,11 +60,6 @@ class Storage {
     }
 
     static updateLevelRating(shapeType, difficulty, level, rating) {
-        // let ratings = this.getLevelRating(shapeType, difficulty);
-        
-        // if (ratings.length < level) ratings = ratings.padEnd(level, 'U');
-        // ratings = ratings.substring(0, level - 1) + rating + ratings.substring(level);
-
         const key = 'ratings_' + shapeType + '_' + difficulty + '_' + level;
         localStorage.setItem(key, rating);
     }

@@ -1,17 +1,17 @@
 class TriangleDirection {
-    static left  = { dcol: -1, drow:  0};
-    static right = { dcol:  1, drow:  0};
-    static up    = { dcol:  0, drow: -1};
-    static down  = { dcol:  0, drow:  1};
+    left  = { dcol: -1, drow:  0};
+    right = { dcol:  1, drow:  0};
+    up    = { dcol:  0, drow: -1};
+    down  = { dcol:  0, drow:  1};
 
     // randomly choose a direction from 'piece' to another piece that hasn't been visited.
-    static getRandomValidDirection(piece) {
+    getRandomValidDirection(piece) {
         let possibles = [];
 
-        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.left))  possibles.push(TriangleDirection.left);
-        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.right)) possibles.push(TriangleDirection.right);
-        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.up))    possibles.push(TriangleDirection.up);
-        if (TriangleDirection.isDirectionPossible(piece, TriangleDirection.down))  possibles.push(TriangleDirection.down);
+        if (this.isDirectionPossible(piece, this.left))  possibles.push(this.left);
+        if (this.isDirectionPossible(piece, this.right)) possibles.push(this.right);
+        if (this.isDirectionPossible(piece, this.up))    possibles.push(this.up);
+        if (this.isDirectionPossible(piece, this.down))  possibles.push(this.down);
 
         if (possibles.length === 0) return null;
 
@@ -20,25 +20,25 @@ class TriangleDirection {
     }
 
     // set 'piece' to have access on the specified side
-    static setPieceDirection(piece, dir) {
-        if (dir == TriangleDirection.left) piece.left = true;
-        if (dir == TriangleDirection.right) piece.right = true;
-        if (dir == TriangleDirection.up) piece.up = true;
-        if (dir == TriangleDirection.down) piece.down = true;
+    setPieceDirection(piece, dir) {
+        if (dir == this.left) piece.left = true;
+        if (dir == this.right) piece.right = true;
+        if (dir == this.up) piece.up = true;
+        if (dir == this.down) piece.down = true;
     }
 
     // set 'piece' to have access on the _oppositie_ side.
-    static setPieceOppositeDirection(piece, dir) {
-        if (dir == TriangleDirection.left) piece.right = true;
-        if (dir == TriangleDirection.right) piece.left = true;
-        if (dir == TriangleDirection.up) piece.down = true;
-        if (dir == TriangleDirection.down) piece.up = true;
+    setPieceOppositeDirection(piece, dir) {
+        if (dir == this.left) piece.right = true;
+        if (dir == this.right) piece.left = true;
+        if (dir == this.up) piece.down = true;
+        if (dir == this.down) piece.up = true;
     }
 
     // is the direction possible
-    static isDirectionPossible(piece, dir) {
-        if (piece.pointUp && dir == TriangleDirection.up) return false;
-        if (!piece.pointUp && dir == TriangleDirection.down) return false;
+    isDirectionPossible(piece, dir) {
+        if (piece.pointUp && dir == this.up) return false;
+        if (!piece.pointUp && dir == this.down) return false;
         const next = piece.findNeighbour(dir);
         if (next == undefined) return false;
         return !(next.left || next.right || next.up || next.down); 
@@ -53,6 +53,7 @@ class TrianglePuzzle {
     minSolveCount = 0;
     moveCount;
     history = [];
+    direction = new TriangleDirection();
 
     constructor(difficulty, puzzleNumber) {
         Math.seedrandom(puzzleNumber);
@@ -110,14 +111,14 @@ class TrianglePuzzle {
     // Recursively called - creates a track from the current track to any
     // unoccupied squares, and backtracks if necessary, until all squares are filled.
     makeTracks(piece) {
-        let dir = TriangleDirection.getRandomValidDirection(piece);
+        let dir = this.direction.getRandomValidDirection(piece);
         while (dir !== null) {
             let neighbour = piece.findNeighbour(dir);
-            TriangleDirection.setPieceDirection(piece, dir);
-            TriangleDirection.setPieceOppositeDirection(neighbour, dir);
+            this.direction.setPieceDirection(piece, dir);
+            this.direction.setPieceOppositeDirection(neighbour, dir);
             this.makeTracks(neighbour);
 
-            dir = TriangleDirection.getRandomValidDirection(piece);
+            dir = this.direction.getRandomValidDirection(piece);
         }
     }
 
@@ -156,19 +157,19 @@ class TrianglePuzzle {
         piece.flow = true;
 
         if (piece.left) {
-            let next = piece.findNeighbour(TriangleDirection.left);
+            let next = piece.findNeighbour(this.direction.left);
             if (next && next.right) this.followFlow(next);
         }
         if (piece.up) {
-            let next = piece.findNeighbour(TriangleDirection.up);
+            let next = piece.findNeighbour(this.direction.up);
             if (next && next.down) this.followFlow(next);
         }
         if (piece.right) {
-            let next = piece.findNeighbour(TriangleDirection.right);
+            let next = piece.findNeighbour(this.direction.right);
             if (next && next.left) this.followFlow(next);
         }
         if (piece.down) {
-            let next = piece.findNeighbour(TriangleDirection.down);
+            let next = piece.findNeighbour(this.direction.down);
             if (next && next.up) this.followFlow(next);
         }
     }
