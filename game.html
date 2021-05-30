@@ -25,7 +25,7 @@
     </div>
     <div class="gameScreen hidden" id="gameScreen">
         <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty</div>
-        <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> minimum</div> 
+        <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
         <canvas class="canvas" id="canvas" width="800" height="800"></canvas>
         <div class="buttonBar">
             <button id="undoButton" class="gameButton">Undo</button>
@@ -53,7 +53,7 @@
             <span class="welldone">Well done!</span> 
             You have beaten <span id="completeShapeType"></span> <span id="completeDifficulty"></span> level <span id="completeLevel"></span>.
             You finished in <span id="completeMoveCount"></span> turns.  
-            The minimum was <span id="completeMinimumMoveCount"></span>.
+            The target was <span id="completeMinimumMoveCount"></span>.
             <span class="rating">You get <span id="completeRating">0</span> rating <span id="completeAttempts"></span>.</span>
         </div>
         <div class="buttonBar">
