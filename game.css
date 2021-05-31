@@ -2,6 +2,27 @@
   display: none; 
 }
 
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.topArea {
+  flex-shrink: 0;
+}
+
+.bottomArea {
+  flex-shrink: 0;
+}
+
+.mainArea {
+  flex-grow: 1;
+}
+
+.left {
+  float: left;
+}
+
 button {
   margin-top: 10px;
   width: 100px;
@@ -87,12 +108,6 @@ button {
 
 .gameScreen .count {
     color: red;
-}
-
-.gameScreen #backButton {
-    position: absolute;
-    left: 10px;
-    top: 10px;
 }
 
 /* Finish screen */
