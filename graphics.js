@@ -4,8 +4,8 @@ class Graphics {
     puzzle;
     canvas;
     context;
-    maxWidth = 800;
-    maxHeight = 800;
+    maxWidth = window.innerWidth - 50;
+    maxHeight = window.innerHeight - 150;
     leftMargin = 10;
     topMargin = 10;
     rightMargin = 10;
