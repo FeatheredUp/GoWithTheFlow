@@ -10,7 +10,7 @@
     <script src="statistics.js?1"></script>
 </head>
 <body>
-    <div class="chooseScreen" id="chooseScreen">
+    <div class="chooseScreen flex" id="chooseScreen">
         <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="shapeContainer">Choose shape <select id="shapeSelect"><option value="square" selected>Square</option><option value="triangle">Triangle</option></select></div>
         <div class="difficultyContainer">
@@ -24,13 +24,17 @@
         <button id="startButton">Start</button>
     </div>
     <div class="gameScreen hidden" id="gameScreen">
-        <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty</div>
-        <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
-        <canvas class="canvas" id="canvas" width="800" height="800"></canvas>
-        <div class="buttonBar">
+        <div class="topArea">
+            <button id="backButton" class="gameButton left">Other options</button>
+            <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty</div>
+            <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
+        </div>
+        <div class="mainArea">
+            <canvas class="canvas" id="canvas"></canvas>
+        </div>
+        <div class="gameButtonBar bottomArea">
             <button id="undoButton" class="gameButton">Undo</button>
             <button id="restartButton" class="gameButton">Restart</button>
-            <button id="backButton" class="gameButton">Other options</button>
         </div>
     </div>
     <div class="statisticsScreen hidden" id="statisticsScreen">

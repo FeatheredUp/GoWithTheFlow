@@ -59,8 +59,8 @@ function showStatistics() {
 
     document.getElementById("statisticsShapeType").innerText = shapeType;
     document.getElementById("statisticsDifficulty").innerText = mapDifficultyToWords(difficulty);
-    setVisibility(document.getElementById("nostats"), maxLevel == 0);
-    setVisibility(document.getElementById("stats"), maxLevel != 0);
+    setVisibility("nostats", maxLevel == 0);
+    setVisibility("stats", maxLevel != 0);
 
     const statsTableBody = document.getElementById("statsTableBody");
     statsTableBody.innerHTML = '';
@@ -136,33 +136,33 @@ function render() {
 /* Show the selected screen and hide the others */
 
 function showGameScreen() {
-    document.getElementById("finishScreen").classList.add('hidden');
-    document.getElementById("chooseScreen").classList.add('hidden');
-    document.getElementById("statisticsScreen").classList.add('hidden');
-    document.getElementById("gameScreen").classList.remove('hidden');
+    setSectionVisibility("finishScreen", false);
+    setSectionVisibility("chooseScreen", false);
+    setSectionVisibility("statisticsScreen", false);
+    setSectionVisibility("gameScreen", true);
 }
 
 function showStatisticsScreen() {
-    document.getElementById("finishScreen").classList.add('hidden');
-    document.getElementById("chooseScreen").classList.add('hidden');
-    document.getElementById("gameScreen").classList.add('hidden');
-    document.getElementById("statisticsScreen").classList.remove('hidden');
+    setSectionVisibility("finishScreen", false);
+    setSectionVisibility("chooseScreen", false);
+    setSectionVisibility("gameScreen", false);
+    setSectionVisibility("statisticsScreen", true);
 }
 
 function showChooseScreen() {
-    document.getElementById("gameScreen").classList.add('hidden');
-    document.getElementById("finishScreen").classList.add('hidden');
-    document.getElementById("statisticsScreen").classList.add('hidden');
-    document.getElementById("chooseScreen").classList.remove('hidden');
+    setSectionVisibility("gameScreen", false);
+    setSectionVisibility("finishScreen", false);
+    setSectionVisibility("statisticsScreen", false);
+    setSectionVisibility("chooseScreen", true);
 }
 
 function showFinishScreen() {
     updateChooseScreen();
 
-    document.getElementById("gameScreen").classList.add('hidden');
-    document.getElementById("chooseScreen").classList.add('hidden');
-    document.getElementById("statisticsScreen").classList.add('hidden');
-    document.getElementById("finishScreen").classList.remove('hidden');
+    setSectionVisibility("gameScreen", false);
+    setSectionVisibility("chooseScreen", false);
+    setSectionVisibility("statisticsScreen", false);
+    setSectionVisibility("finishScreen", true);
 }
 
 /* Respond to selection of shape, difficulty and level */
@@ -183,7 +183,7 @@ function difficultySliderUpdated() {
     let maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
     let level = Storage.getLevel(shapeType, difficulty) + 1;
 
-    setVisibility(document.getElementById("levelContainer"), maxLevel > 1);
+    setVisibility("levelContainer", maxLevel > 1);
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = level;
     levelUpdated();
@@ -211,9 +211,19 @@ function mapDifficultyToWords(difficulty) {
 
 function setVisibility(ctrl, show) {
     if (show) {
-        ctrl.classList.remove('hidden');
+        document.getElementById(ctrl).classList.remove('hidden');
     } else {
-        ctrl.classList.add('hidden');
+        document.getElementById(ctrl).classList.add('hidden');
+    }
+}
+
+function setSectionVisibility(section, show) {
+    if (show) {
+        document.getElementById(section).classList.remove('hidden');
+        document.getElementById(section).classList.add('flex');
+    } else {
+        document.getElementById(section).classList.remove('flex');
+        document.getElementById(section).classList.add('hidden');
     }
 }
 
