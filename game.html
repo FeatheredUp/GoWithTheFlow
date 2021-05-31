@@ -1,13 +1,13 @@
 <html>
 <head>
-    <link rel="stylesheet" href="game.css"></style>
-    <script src="options.js?1"></script>
-    <script src="graphics.js?1"></script>
-    <script src="puzzle.js?1"></script>
-    <script src="triangle.js?1"></script>
-    <script src="seedrandom.js?1"></script>
-    <script src="storage.js?1"></script>
-    <script src="statistics.js?1"></script>
+    <link rel="stylesheet" href="game.css?3"></style>
+    <script src="options.js?3"></script>
+    <script src="graphics.js?3"></script>
+    <script src="puzzle.js?3"></script>
+    <script src="triangle.js?3"></script>
+    <script src="seedrandom.js?3"></script>
+    <script src="storage.js?3"></script>
+    <script src="statistics.js?3"></script>
 </head>
 <body>
     <div class="chooseScreen flex" id="chooseScreen">
@@ -17,8 +17,13 @@
             Choose difficulty 
             <input type="range" min="1" max="5" value="1" class="difficultySlider slider" id="difficultySlider"> 
             <span class="difficultyValue" id="difficultyValue"></span>
-            <button id="showStatisticsButton">Statistics</button>
         </div>
+        <div class="invisibilityContainer">
+            <label for="invisibilityCheck">Some invisibile pieces:</label> 
+            <input type="checkbox" class="invisibilityCheck" id="invisibilityCheck">
+        </div>
+        <button id="showStatisticsButton">Statistics</button>
+
         <div class="levelContainer" id="levelContainer">Choose level <input type="range" min="1" max="10" value="10" class="levelSlider slider" id="levelSlider"> <span class="levelValue" id="levelValue"></span></div>
         <div class="colourContainer">Choose colour scheme <select id="colourSelect"></select></div>
         <button id="startButton">Start</button>
@@ -26,7 +31,7 @@
     <div class="gameScreen hidden" id="gameScreen">
         <div class="topArea">
             <button id="backButton" class="gameButton left">Other options</button>
-            <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty</div>
+            <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty<span id="gameInvisibility"></span></div>
             <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
         </div>
         <div class="mainArea">
@@ -38,7 +43,7 @@
         </div>
     </div>
     <div class="statisticsScreen hidden" id="statisticsScreen">
-        <div class="statisticsHeaderContainer">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span></div> 
+        <div class="statisticsHeaderContainer">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span> <span id="statisticsInvisibility"></span></div> 
         <div class="hidden" id="nostats">No information has been gathered on this difficulty yet.</div>
         <div class="hidden" id="stats">
             <table>
@@ -55,7 +60,7 @@
     <div class="finishScreen hidden" id="finishScreen">
         <div class="congratulate" id="congratulate">
             <span class="welldone">Well done!</span> 
-            You have beaten <span id="completeShapeType"></span> <span id="completeDifficulty"></span> level <span id="completeLevel"></span>.
+            You have beaten <span id="completeShapeType"></span> <span id="completeDifficulty"></span> level <span id="completeLevel"></span><span id="completeInvisibility"></span>.
             You finished in <span id="completeMoveCount"></span> turns.  
             The target was <span id="completeMinimumMoveCount"></span>.
             <div class="rating">You get <span id="completeRating">0</span> rating <span id="completeAttempts"></span>.</div>
@@ -66,6 +71,6 @@
             <button id="returnToChooseButton">Other options</button>
         </div>
     </div>
-    <script src="game.js?1"></script>
+    <script src="game.js?3"></script>
 </body>
 </html>

@@ -176,45 +176,47 @@ class Square {
         this.context.stroke();
 
         //The connectors
-        this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
-        this.context.lineWidth = this.width / 6;
-        this.context.lineJoin = 'bevel';
-        this.context.lineCap = 'butt';
+        if (this.piece.flow || !this.piece.invisible) {
+            this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
+            this.context.lineWidth = this.width / 6;
+            this.context.lineJoin = 'bevel';
+            this.context.lineCap = 'butt';
 
-        var leftPos  = { x: this.start.x,  y: this.centre.y};
-        var rightPos = { x: this.end.x,    y: this.centre.y};
-        var upPos    = { x: this.centre.x, y: this.start.y};
-        var downPos  = { x: this.centre.x, y: this.end.y};
+            var leftPos  = { x: this.start.x,  y: this.centre.y};
+            var rightPos = { x: this.end.x,    y: this.centre.y};
+            var upPos    = { x: this.centre.x, y: this.start.y};
+            var downPos  = { x: this.centre.x, y: this.end.y};
 
-        if (this.piece.left && this.piece.up) this.drawConnector(leftPos, upPos);
-        if (this.piece.left && this.piece.right) this.drawConnector(leftPos, rightPos);
-        if (this.piece.left && this.piece.down) this.drawConnector(leftPos, downPos);
-        if (this.piece.up && this.piece.right) this.drawConnector(upPos, rightPos);
-        if (this.piece.up && this.piece.down) this.drawConnector(upPos, downPos);
-        if (this.piece.right && this.piece.down) this.drawConnector(rightPos, downPos);
+            if (this.piece.left && this.piece.up) this.drawConnector(leftPos, upPos);
+            if (this.piece.left && this.piece.right) this.drawConnector(leftPos, rightPos);
+            if (this.piece.left && this.piece.down) this.drawConnector(leftPos, downPos);
+            if (this.piece.up && this.piece.right) this.drawConnector(upPos, rightPos);
+            if (this.piece.up && this.piece.down) this.drawConnector(upPos, downPos);
+            if (this.piece.right && this.piece.down) this.drawConnector(rightPos, downPos);
 
-        if (this.piece.countDirections == 1) {
-            if (this.piece.left) this.drawSingle(leftPos);
-            if (this.piece.right) this.drawSingle(rightPos);
-            if (this.piece.up) this.drawSingle(upPos);
-            if (this.piece.down) this.drawSingle(downPos);
-        }
+            if (this.piece.countDirections == 1) {
+                if (this.piece.left) this.drawSingle(leftPos);
+                if (this.piece.right) this.drawSingle(rightPos);
+                if (this.piece.up) this.drawSingle(upPos);
+                if (this.piece.down) this.drawSingle(downPos);
+            }
 
-        // The flow 'start' indicator
-        if (this.isFlowStart) {
-            const diamondWidth = this.width / 12;
-            const diamondHeight = this.height / 6;
-            this.context.beginPath();
-            this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
-            this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
-            this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
-            this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
-            this.context.closePath();
-            this.context.fillStyle = this.colours.flowStart;
-            this.context.lineWidth = this.width / 100;
-            this.context.strokeStyle = this.colours.flow;
-            this.context.fill();
-            this.context.stroke();
+            // The flow 'start' indicator
+            if (this.isFlowStart) {
+                const diamondWidth = this.width / 12;
+                const diamondHeight = this.height / 6;
+                this.context.beginPath();
+                this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
+                this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
+                this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
+                this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
+                this.context.closePath();
+                this.context.fillStyle = this.colours.flowStart;
+                this.context.lineWidth = this.width / 100;
+                this.context.strokeStyle = this.colours.flow;
+                this.context.fill();
+                this.context.stroke();
+            }
         }
     }
 
@@ -294,47 +296,49 @@ class Triangle {
         this.context.closePath();
         this.context.stroke();
 
-        var side = this.width;
-        var leftPos   = { x: this.start.x + (    side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
-        var rightPos  = { x: this.start.x + (3 * side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
+        if (this.piece.flow || !this.piece.invisible) {
+            var side = this.width;
+            var leftPos   = { x: this.start.x + (    side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
+            var rightPos  = { x: this.start.x + (3 * side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
 
-        var upPos   = { x: this.centre.x, y: this.start.y};
-        var downPos = { x: this.centre.x, y: this.end.y};
+            var upPos   = { x: this.centre.x, y: this.start.y};
+            var downPos = { x: this.centre.x, y: this.end.y};
 
-        this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
-        this.context.lineWidth = this.width / 8;
-        this.context.lineJoin = 'bevel';
-        this.context.lineCap = 'butt';
+            this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
+            this.context.lineWidth = this.width / 8;
+            this.context.lineJoin = 'bevel';
+            this.context.lineCap = 'butt';
 
-        if (this.piece.left && this.piece.up) this.drawConnector(leftPos, upPos);
-        if (this.piece.left && this.piece.right) this.drawConnector(leftPos, rightPos);
-        if (this.piece.left && this.piece.down) this.drawConnector(leftPos, downPos);
-        if (this.piece.up && this.piece.right) this.drawConnector(upPos, rightPos);
-        if (this.piece.up && this.piece.down) this.drawConnector(upPos, downPos);
-        if (this.piece.right && this.piece.down) this.drawConnector(rightPos, downPos);
+            if (this.piece.left && this.piece.up) this.drawConnector(leftPos, upPos);
+            if (this.piece.left && this.piece.right) this.drawConnector(leftPos, rightPos);
+            if (this.piece.left && this.piece.down) this.drawConnector(leftPos, downPos);
+            if (this.piece.up && this.piece.right) this.drawConnector(upPos, rightPos);
+            if (this.piece.up && this.piece.down) this.drawConnector(upPos, downPos);
+            if (this.piece.right && this.piece.down) this.drawConnector(rightPos, downPos);
 
-        if (this.piece.countDirections == 1) {
-            if (this.piece.left) this.drawSingle(leftPos);
-            if (this.piece.right) this.drawSingle(rightPos);
-            if (this.piece.up) this.drawSingle(upPos);
-            if (this.piece.down) this.drawSingle(downPos);
-        }
+            if (this.piece.countDirections == 1) {
+                if (this.piece.left) this.drawSingle(leftPos);
+                if (this.piece.right) this.drawSingle(rightPos);
+                if (this.piece.up) this.drawSingle(upPos);
+                if (this.piece.down) this.drawSingle(downPos);
+            }
 
-        // The flow 'start' indicator
-        if (this.isFlowStart) {
-            const diamondWidth = this.width / 12;
-            const diamondHeight = this.height / 6;
-            this.context.beginPath();
-            this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
-            this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
-            this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
-            this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
-            this.context.closePath();
-            this.context.fillStyle = this.colours.flowStart;
-            this.context.lineWidth = this.width / 100;
-            this.context.strokeStyle = this.colours.flow;
-            this.context.fill();
-            this.context.stroke();
+            // The flow 'start' indicator
+            if (this.isFlowStart) {
+                const diamondWidth = this.width / 12;
+                const diamondHeight = this.height / 6;
+                this.context.beginPath();
+                this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
+                this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
+                this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
+                this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
+                this.context.closePath();
+                this.context.fillStyle = this.colours.flowStart;
+                this.context.lineWidth = this.width / 100;
+                this.context.strokeStyle = this.colours.flow;
+                this.context.fill();
+                this.context.stroke();
+            }
         }
     }
 

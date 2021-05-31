@@ -2,6 +2,7 @@ let canvas = document.getElementById('canvas'),
     graphics,
     currentShapeType,
     currentDifficulty,
+    currentInvisibility,
     currentLevel; 
 
 initialiseControls();
@@ -16,14 +17,16 @@ function startNewGame() {
     const colourSelect = document.getElementById("colourSelect").value;
     Storage.updateShapeType(currentShapeType);
     Storage.updateDifficulty(currentShapeType, currentDifficulty);
-    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel - 1);
+    Storage.updateInvisibility(currentShapeType, currentDifficulty, currentInvisibility);
+    Storage.updateLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel - 1);
     Storage.updateColourScheme(colourSelect);
 }
 
 function repeatGame() {
     const shapeType = Storage.getShapeType();
     const difficulty = Storage.getDifficulty(shapeType);
-    const level = Storage.getLevel(shapeType, difficulty);
+    const invisibility = Storage.getInvisibility(shapeType, difficulty);
+    const level = Storage.getLevel(shapeType, difficulty, invisibility);
     document.getElementById("levelSlider").value = level;
     levelUpdated();
     playSelectedLevel();
@@ -33,12 +36,12 @@ function congratulate() {
     let stats = new LevelStatistics(currentShapeType, currentDifficulty, currentLevel, graphics.puzzle.minSolveCount, graphics.puzzle.moveCount);
 
     // Store the successful completion of this level
-    Storage.updateLevel(currentShapeType, currentDifficulty, currentLevel);
-    Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentLevel);
-    Storage.updateLevelRating(currentShapeType, currentDifficulty, currentLevel, stats.rating);
-    Storage.updateLevelAttempts(currentShapeType, currentDifficulty, currentLevel);
+    Storage.updateLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
+    Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
+    Storage.updateLevelRating(currentShapeType, currentDifficulty, currentInvisibility, currentLevel, stats.rating);
+    Storage.updateLevelAttempts(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
 
-    const attempts = Storage.getLevelAttempts(currentShapeType, currentDifficulty, currentLevel);
+    const attempts = Storage.getLevelAttempts(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
     let attemptText = "after " + attempts + " attempts";
     if (attempts == 1) attemptText = "after 1 attempt";
 
@@ -49,24 +52,27 @@ function congratulate() {
     document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(stats.difficulty);
     document.getElementById("completeLevel").innerText = stats.level;
     document.getElementById("completeAttempts").innerText = attemptText;
+    document.getElementById("completeInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
     showFinishScreen();
 }
 
 function showStatistics() {
     const shapeType = document.getElementById("shapeSelect").value;
-    const difficulty = parseInt(document.getElementById("difficultySlider").value)
-    let maxLevel = Storage.getMaxLevel(shapeType, difficulty);
+    const difficulty = parseInt(document.getElementById("difficultySlider").value);
+    const invisibility = document.getElementById("invisibilityCheck").checked;
+    let maxLevel = Storage.getMaxLevel(shapeType, difficulty, invisibility);
 
     document.getElementById("statisticsShapeType").innerText = shapeType;
     document.getElementById("statisticsDifficulty").innerText = mapDifficultyToWords(difficulty);
+    document.getElementById("statisticsInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
     setVisibility("nostats", maxLevel == 0);
     setVisibility("stats", maxLevel != 0);
 
     const statsTableBody = document.getElementById("statsTableBody");
     statsTableBody.innerHTML = '';
     for (let level=1; level<=maxLevel; level++) {
-        const rating = LevelStatistics.mapRatingToGrade(Storage.getLevelRating(shapeType, difficulty, level));
-        const attempts = Storage.getLevelAttempts(shapeType, difficulty, level);
+        const rating = LevelStatistics.mapRatingToGrade(Storage.getLevelRating(shapeType, difficulty, currentInvisibility, level));
+        const attempts = Storage.getLevelAttempts(shapeType, difficulty, currentInvisibility, level);
 
         let row = createStatsTableRow(level, rating, attempts);
         statsTableBody.appendChild(row);
@@ -104,12 +110,14 @@ function playSelectedLevel() {
     currentShapeType = document.getElementById("shapeSelect").value;
     currentDifficulty = parseInt(document.getElementById("difficultySlider").value)
     currentLevel = parseInt(document.getElementById("levelSlider").value);
+    currentInvisibility = document.getElementById("invisibilityCheck").checked;
     const colourScheme = document.getElementById('colourSelect').value;
 
     document.getElementById("gameLevel").innerText = currentLevel;
     document.getElementById("gameDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
+    document.getElementById("gameInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
 
-    let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel): new TrianglePuzzle(currentDifficulty, currentLevel);
+    let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);
     graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
     render(graphics);
     showGameScreen();
@@ -175,17 +183,31 @@ function shapeTypeUpdated() {
 }
 
 function difficultySliderUpdated() {
-    const difficulty = document.getElementById("difficultySlider").value;
-    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(parseInt(difficulty));
+    const difficulty = parseInt(document.getElementById("difficultySlider").value);
+    document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
 
-    // display the levels for this updated difficulty
     const shapeType = document.getElementById("shapeSelect").value;
-    let maxLevel = Storage.getMaxLevel(shapeType, difficulty) + 1;
-    let level = Storage.getLevel(shapeType, difficulty) + 1;
+    const invisibility = Storage.getInvisibility(shapeType, difficulty);
+    document.getElementById("invisibilityCheck").checked = invisibility;
+
+    invisibilityUpdated();
+}
+
+function invisibilityUpdated() {
+    // display the levels for these options
+    const shapeType = document.getElementById("shapeSelect").value;
+    const difficulty = parseInt(document.getElementById("difficultySlider").value);
+    const invisibility = document.getElementById("invisibilityCheck").checked;
+
+    let maxLevel = Storage.getMaxLevel(shapeType, difficulty, invisibility) + 1;
+    let level = Storage.getLevel(shapeType, difficulty, invisibility) + 1;
 
     setVisibility("levelContainer", maxLevel > 1);
     document.getElementById("levelSlider").max = maxLevel;
     document.getElementById("levelSlider").value = level;
+
+    document.getElementById("showStatisticsButton").innerText = "Statistics for " + shapeType + " " + mapDifficultyToWords(difficulty) + (invisibility ? " with invisibility" : "");
+
     levelUpdated();
 }
 
@@ -299,5 +321,9 @@ function attachEvents() {
 
     document.getElementById("showStatisticsButton").addEventListener('click', function(event) {
         showStatistics();
+    }, false);
+
+    document.getElementById("invisibilityCheck").addEventListener("change", function(event) {
+        invisibilityUpdated();
     }, false);
 }

@@ -48,6 +48,7 @@ class TriangleDirection {
 class TrianglePuzzle {
     pieces = [];
     flowStart;
+    invisibilityCount;
     colCount;
     rowCount;
     minSolveCount = 0;
@@ -55,18 +56,28 @@ class TrianglePuzzle {
     history = [];
     direction = new TriangleDirection();
 
-    constructor(difficulty, puzzleNumber) {
-        Math.seedrandom(puzzleNumber);
+    constructor(difficulty, puzzleNumber, invisibility) {
+        this.addRandomSeed(puzzleNumber, invisibility);
 
         const size = this.getSizeFromDifficulty(difficulty);
         this.colCount = size.colCount;
         this.rowCount = size.rowCount;
         this.moveCount = 0;
+        const invisibilityPercent = invisibility ? 5 : 0;
+        this.invisibilityCount = Math.ceil(invisibilityPercent * this.colCount * this.rowCount / 100);
 
         this.makePuzzle();
         this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
         this.mixUp();
         this.calculateFlow();
+    }
+
+    addRandomSeed(puzzleNumber, invisibility) {
+        if (invisibility) {
+            Math.seedrandom(puzzleNumber +  'I');
+        } else {
+            Math.seedrandom(puzzleNumber);
+        }
     }
 
     // Get the size based on the difficulty level, with some randomness.
@@ -103,9 +114,9 @@ class TrianglePuzzle {
             }
         }
 
-        const position = { col: getRandomValue(0, this.colCount-1), row: getRandomValue(0, this.rowCount-1) };
-        const piece = this.pieces.find(({ row, col }) => row == position.row && col == position.col);
-        this.makeTracks(piece);
+        const startingPiece = this.getRandomPiece();
+        this.makeTracks(startingPiece);
+        this.addInvisibility();
     }
 
     // Recursively called - creates a track from the current track to any
@@ -120,6 +131,21 @@ class TrianglePuzzle {
 
             dir = this.direction.getRandomValidDirection(piece);
         }
+    }
+
+    addInvisibility() {
+        let count = 0;
+        while (count < this.invisibilityCount) {
+            const piece = this.getRandomPiece();
+            if (piece.invisible) continue;
+            piece.invisible = true;
+            count += 1;
+        }
+    }
+
+    getRandomPiece() {
+        const position = { col: getRandomValue(0, this.colCount-1), row: getRandomValue(0, this.rowCount-1) };
+        return this.pieces.find(({ row, col }) => row == position.row && col == position.col);
     }
 
     // Turns each piece around randomly between 0 and 2 times.
@@ -201,6 +227,7 @@ class TrianglePiece {
     pointUp;
     flow;
     touchCount;
+    invisible;
 
     constructor(puzzle, row, col, left, up, right, down, pointUp) {
         this.puzzle = puzzle;
@@ -214,6 +241,7 @@ class TrianglePiece {
 
         this.flow = false;
         this.touchCount = 0;
+        this.invisible = false;
     }
 
     // The piece has been 'clicked on' by the player, so rotate it,  mark it as touched, and update the flow.

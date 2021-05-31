@@ -74,6 +74,10 @@ button {
   top: 10px;
 }
 
+.chooseScreen #showStatisticsButton {
+  width : auto;
+}
+
 /* Game Screen */
 
 .gameScreen {

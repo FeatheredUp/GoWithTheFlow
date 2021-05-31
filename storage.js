@@ -10,13 +10,18 @@ class Storage {
         return parseInt(Storage.getValue(key, 1));
     }
 
-    static getLevel(shapeType, difficulty) {
-        const key = 'level_' + shapeType + '_' + difficulty;
+    static getInvisibility(shapeType, difficulty) {
+        const key = 'invisibility_' + shapeType + '_' + difficulty;
+        return Storage.getValue(key, 0) == 1;
+    }
+
+    static getLevel(shapeType, difficulty, invisibility) {
+        const key = 'level_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' );
         return parseInt(Storage.getValue(key, 0));
     }
 
-    static getMaxLevel(shapeType, difficulty) {
-        const key = 'maxlevel_' + shapeType + '_' + difficulty;
+    static getMaxLevel(shapeType, difficulty, invisibility) {
+        const key = 'maxlevel_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' );
         return parseInt(Storage.getValue(key, 0));
     }
 
@@ -24,13 +29,13 @@ class Storage {
         return Storage.getValue('colourScheme', 'default');
     }
 
-    static getLevelRating(shapeType, difficulty, level) {
-        const key = 'ratings_' + shapeType + '_' + difficulty + '_' + level;
-        return Storage.getValue(key, 'U');
+    static getLevelRating(shapeType, difficulty, invisibility, level) {
+        const key = 'ratings_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' ) + '_' + level;
+        return Storage.getValue(key, '0');
     }
 
-    static getLevelAttempts(shapeType, difficulty, level) {
-        const key = 'attempts_' + shapeType + '_' + difficulty + '_' + level;
+    static getLevelAttempts(shapeType, difficulty, invisibility, level) {
+        const key = 'attempts_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' ) + '_' + level;
         return Storage.getValue(key, 0);
     }
 
@@ -44,14 +49,20 @@ class Storage {
         localStorage.setItem(key, difficulty);
     }
 
-    static updateLevel(shapeType, difficulty, level) {
-        const key = 'level_' + shapeType + '_' + difficulty;
+    static updateInvisibility(shapeType, difficulty, invisibility) {
+        const key = 'invisibility_' + shapeType + '_' + difficulty;
+        localStorage.setItem(key, invisibility ? 1 : 0);
+    }
+
+    static updateLevel(shapeType, difficulty, invisibility, level) {
+        const key = 'level_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' );
         localStorage.setItem(key, level);
     }
 
-    static updateMaxLevel(shapeType, difficulty, level) {
-        const key = 'maxlevel_' + shapeType + '_' + difficulty;
-        const previousMax = Storage.getMaxLevel(shapeType, difficulty);
+    static updateMaxLevel(shapeType, difficulty, invisibility, level) {
+        const key = 'maxlevel_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' );
+        const previousMax = Storage.getMaxLevel(shapeType, difficulty, invisibility);
+        // Only store if it's a higher level
         if (level > previousMax) localStorage.setItem(key, level);
     }
 
@@ -59,14 +70,17 @@ class Storage {
         localStorage.setItem('colourScheme', colourScheme);
     }
 
-    static updateLevelRating(shapeType, difficulty, level, rating) {
-        const key = 'ratings_' + shapeType + '_' + difficulty + '_' + level;
-        localStorage.setItem(key, rating);
+    static updateLevelRating(shapeType, difficulty, invisibility, level, rating) {
+        const previousRating = parseInt(Storage.getLevelRating(shapeType, difficulty, invisibility, level));
+        const key = 'ratings_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' ) + '_' + level;
+        // Only store if it's a better (higher) rating
+        if (rating > previousRating) localStorage.setItem(key, rating);
     }
 
-    static updateLevelAttempts(shapeType, difficulty, level) {
-        const previousAttempts = parseInt(Storage.getLevelAttempts(shapeType, difficulty, level));
-        const key = 'attempts_' + shapeType + '_' + difficulty + '_' + level;
+    static updateLevelAttempts(shapeType, difficulty, invisibility, level) {
+        const previousAttempts = parseInt(Storage.getLevelAttempts(shapeType, difficulty, invisibility, level));
+        const key = 'attempts_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' ) + '_' + level;
+        // Increase attempts by one
         localStorage.setItem(key, previousAttempts + 1);
     }
 
