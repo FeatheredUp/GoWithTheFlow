@@ -6,15 +6,33 @@
   display: initial;
 }
 
-
 .left {
   float: left;
 }
+
+.section {
+  border: black 1px solid;
+  padding-bottom: 10px;
+}
+
+.sectionTitle {
+  border-bottom: black 1px solid;
+  font-size: 1.2em;
+  background-color:rgb(113, 179, 218);
+  padding: 10px;
+}
+
+.container {
+  margin-left: 10px;
+  margin-top: 10px;
+} 
 
 button {
   margin-top: 10px;
   width: 100px;
   height: 40px;
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 /* Choose screen */
@@ -63,16 +81,9 @@ button {
   color: cornflowerblue;
 }
 
-.chooseScreen div {
-  margin-left: 10px;
-  margin-top: 10px;
-}
-
 .chooseScreen #startButton {
-  position: relative;
-  left: 10px;
-  top: 10px;
-}
+  background-color: lightgreen;
+} 
 
 .chooseScreen #showStatisticsButton {
   width : auto;
