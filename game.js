@@ -117,6 +117,7 @@ function playSelectedLevel() {
     document.getElementById("gameDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
     document.getElementById("gameInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
 
+    if (graphics) graphics.stop();
     let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);
     graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
     render(graphics);

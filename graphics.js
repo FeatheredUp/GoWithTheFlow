@@ -29,7 +29,7 @@ class Graphics {
 
         this.addPieces(puzzle.pieces);
 
-        this.render();
+        this.render(null);
     }
 
     // Calculate the length of one side
@@ -76,12 +76,12 @@ class Graphics {
     }
 
     // Render the puzzle area
-    render() {
+    render(currentPiece) {
         this.context.fillStyle = this.options.colourScheme.back;
         this.context.fillRect(0, 0, this.sizes.effectiveWidth, this.sizes.effectiveHeight);
 
         for (const shape of this.shapes) {
-            shape.render();
+            shape.render(currentPiece);
         }
     }
 
@@ -96,15 +96,21 @@ class Graphics {
     
         if (shape != null) {
             shape.piece.interact();
-            this.render();
+            this.render(shape.piece);
             return true;
         }
         return false;
     }
 
+    stop() {
+        for (const shape of this.shapes) {
+            shape.stop();
+        }
+    }
+
     undo() {
         this.puzzle.undo();
-        this.render();
+        this.render(null);
     }
 
     // Get the shape clicked (assumes rectangular shapes)
@@ -146,6 +152,8 @@ class Square {
     piece;
     isFlowStart;
     colours;
+    timeOutFlowStart;
+    timeOutCurrent;
 
     constructor(piece, cellSide, xOffset, yOffset, context, isFlowStart, colours) {
         const halfcellSide = cellSide / 2;
@@ -162,7 +170,8 @@ class Square {
     }
 
     // Render this shape
-    render() {
+    render(currentPiece) {
+        this.stop();
         // Background
         this.context.fillStyle = this.piece.touched ? this.colours.touched : this.colours.back;
         this.context.fillRect(this.start.x, this.start.y, this.width, this.height);
@@ -175,8 +184,10 @@ class Square {
         this.context.closePath();
         this.context.stroke();
 
+        const brieflyVisible = currentPiece != null && this.piece.invisible && this.piece.col == currentPiece.col && this.piece.row == currentPiece.row;
+
         //The connectors
-        if (this.piece.flow || !this.piece.invisible) {
+        if (this.piece.flow || !this.piece.invisible || brieflyVisible) {
             this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
             this.context.lineWidth = this.width / 6;
             this.context.lineJoin = 'bevel';
@@ -203,21 +214,38 @@ class Square {
 
             // The flow 'start' indicator
             if (this.isFlowStart) {
-                const diamondWidth = this.width / 12;
-                const diamondHeight = this.height / 6;
-                this.context.beginPath();
-                this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
-                this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
-                this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
-                this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
-                this.context.closePath();
-                this.context.fillStyle = this.colours.flowStart;
-                this.context.lineWidth = this.width / 100;
-                this.context.strokeStyle = this.colours.flow;
-                this.context.fill();
-                this.context.stroke();
+                this.drawFlowStart(false);
             }
         }
+
+        if (brieflyVisible) {
+            window.setTimeout( () => { this.render(null); } , 2000);
+        }
+    }
+
+    stop() {
+        window.clearTimeout(this.timeOutFlowStart);
+        window.clearTimeout(this.timeOutCurrent);
+    }
+
+    drawFlowStart(pulse) {
+        const diamondWidth = this.width / 12;
+        const diamondHeight = this.height / 6;
+
+        this.context.beginPath();
+        this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
+        this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
+        this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
+        this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
+        this.context.closePath();
+
+        this.context.fillStyle = pulse ? this.colours.flowHighlight : this.colours.flowStart;
+        this.context.lineWidth = this.width / 100;
+        this.context.strokeStyle = this.colours.flowStart;
+        this.context.fill();
+        this.context.stroke();
+
+        this.timeOutFlowStart = window.setTimeout( () => { this.drawFlowStart(!pulse); }, 1000);
     }
 
     drawConnector(firstPos, secondPos) {
@@ -257,6 +285,9 @@ class Triangle {
     pointA;
     pointB;
     pointC;
+    timeOutFlowStart;
+    timeOutCurrent;
+
     constructor(piece, cellSide, xOffset, yOffset, context, isFlowStart, colours) {
         this.context = context;
         this.width = cellSide;
@@ -285,7 +316,8 @@ class Triangle {
     }
 
     // Render this shape
-    render() {
+    render(currentPiece) {
+        this.stop();
         this.context.strokeStyle = this.colours.noFlow;
         this.context.lineWidth = 1;
         this.context.beginPath();
@@ -295,8 +327,12 @@ class Triangle {
       
         this.context.closePath();
         this.context.stroke();
+        this.context.fillStyle = this.piece.touched ? this.colours.touched : this.colours.back;
+        this.context.fill();
 
-        if (this.piece.flow || !this.piece.invisible) {
+        const brieflyVisible = currentPiece != null && this.piece.invisible && this.piece.col == currentPiece.col && this.piece.row == currentPiece.row;
+
+        if (this.piece.flow || !this.piece.invisible || brieflyVisible) {
             var side = this.width;
             var leftPos   = { x: this.start.x + (    side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
             var rightPos  = { x: this.start.x + (3 * side / 4), y: this.start.y + (side * Math.sqrt(3) / 4)};
@@ -325,21 +361,38 @@ class Triangle {
 
             // The flow 'start' indicator
             if (this.isFlowStart) {
-                const diamondWidth = this.width / 12;
-                const diamondHeight = this.height / 6;
-                this.context.beginPath();
-                this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
-                this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
-                this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
-                this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
-                this.context.closePath();
-                this.context.fillStyle = this.colours.flowStart;
-                this.context.lineWidth = this.width / 100;
-                this.context.strokeStyle = this.colours.flow;
-                this.context.fill();
-                this.context.stroke();
+                this.drawFlowStart(false);
             }
         }
+
+        if (brieflyVisible) {
+            this.timeOutCurrent = window.setTimeout( () => { this.render(null); }, 2000);
+        }
+    }
+
+    stop() {
+        window.clearTimeout(this.timeOutFlowStart);
+        window.clearTimeout(this.timeOutCurrent);
+    }
+
+    drawFlowStart(pulse) {
+        const diamondWidth = this.width / 12;
+        const diamondHeight = this.height / 6;
+
+        this.context.beginPath();
+        this.context.moveTo(this.centre.x, this.centre.y - diamondHeight);
+        this.context.lineTo(this.centre.x + diamondWidth, this.centre.y);
+        this.context.lineTo(this.centre.x, this.centre.y + diamondHeight);
+        this.context.lineTo(this.centre.x - diamondWidth, this.centre.y);
+        this.context.closePath();
+
+        this.context.fillStyle = pulse ? this.colours.flowHighlight : this.colours.flowStart;
+        this.context.lineWidth = this.width / 100;
+        this.context.strokeStyle = this.colours.flowStart;
+        this.context.fill();
+        this.context.stroke();
+
+        this.timeOutFlowStart = window.setTimeout( () => { this.drawFlowStart(!pulse); }, 1000);
     }
 
     drawConnector(firstPos, secondPos) {
