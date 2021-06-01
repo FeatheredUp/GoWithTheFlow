@@ -1,3 +1,8 @@
+:root {
+  --highlight-colour: rgb(113, 179, 218);
+  --button-colour: lightgreen;
+}
+
 .hidden { 
   display: none; 
 }
@@ -18,7 +23,7 @@
 .sectionTitle {
   border-bottom: black 1px solid;
   font-size: 1.2em;
-  background-color:rgb(113, 179, 218);
+  background-color: var(--highlight-colour);
   padding: 10px;
 }
 
@@ -26,6 +31,38 @@
   margin-left: 10px;
   margin-top: 10px;
 } 
+
+.slider{
+    -webkit-appearance: none;
+    height: 15px;
+    border-radius: 5px;   
+    background: #d3d3d3;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+} 
+
+.slider:hover {
+  opacity: 1; 
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  appearance: none;
+  width: 25px;
+  height: 25px; 
+  border-radius: 50%; 
+  background: var(--highlight-colour); 
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px; 
+  height: 25px; 
+  border-radius: 50%; 
+  background: var(--highlight-colour); 
+  cursor: pointer; 
+}
 
 button {
   margin-top: 10px;
@@ -41,48 +78,16 @@ button {
   font-size: 1.2em;
 }
 
-.chooseScreen .slider{
-    -webkit-appearance: none;
-    height: 15px;
-    border-radius: 5px;   
-    background: #d3d3d3;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
-} 
-
-.chooseScreen .slider:hover {
-  opacity: 1; 
-}
-
-.chooseScreen .slider::-webkit-slider-thumb {
-  -webkit-appearance: none; 
-  appearance: none;
-  width: 25px;
-  height: 25px; 
-  border-radius: 50%; 
-  background: blue; 
-  cursor: pointer;
-}
-
-.chooseScreen .slider::-moz-range-thumb {
-  width: 25px; 
-  height: 25px; 
-  border-radius: 50%; 
-  background: blue; 
-  cursor: pointer; 
-}
-
 .chooseScreen .welcome {
   font-size: 1.8em;
 }
 
 .chooseScreen .gameName {
-  color: cornflowerblue;
+  color: var(--highlight-colour);
 }
 
 .chooseScreen #startButton {
-  background-color: lightgreen;
+  background-color: var(--button-colour);
 } 
 
 .chooseScreen #showStatisticsButton {
@@ -149,10 +154,12 @@ button {
 .statisticsScreen  tr:nth-child(even) {
   background-color: #eee;
 }
+
 .statisticsScreen tr:nth-child(odd) {
   background-color: #fff;
 }
-.statisticsScreen  th {
+
+.statisticsScreen th {
   color: white;
   background-color: black;
 }
