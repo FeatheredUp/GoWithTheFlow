@@ -76,7 +76,7 @@ class Puzzle {
         this.invisibilityCount = Math.ceil(invisibilityPercent * this.colCount * this.rowCount / 100);
 
         this.makePuzzle();
-        this.flowStart = { col: getRandomValue(0, 2), row: getRandomValue(0, 2) };
+        this.flowStart = this.getRandomVisiblePiece();
         this.mixUp();
         this.calculateFlow();
     }
@@ -152,6 +152,14 @@ class Puzzle {
     getRandomPiece() {
         const position = { col: getRandomValue(0, this.colCount-1), row: getRandomValue(0, this.rowCount-1) };
         return this.pieces.find(({ row, col }) => row == position.row && col == position.col);
+    }
+
+    getRandomVisiblePiece() {
+        let piece = null;
+        do {
+            piece = this.getRandomPiece();
+        } while (piece.invisible);
+        return piece;
     }
 
     // Turns each piece around randomly between 0 and 3 times.

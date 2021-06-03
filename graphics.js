@@ -173,7 +173,7 @@ class Square {
     render(currentPiece) {
         this.stop();
         // Background
-        this.context.fillStyle = this.piece.touched ? this.colours.touched : this.colours.back;
+        this.context.fillStyle = this.piece.invisible ? this.colours.invisible : this.piece.touched ? this.colours.touched : this.colours.back;
         this.context.fillRect(this.start.x, this.start.y, this.width, this.height);
 
         // Guideline
@@ -327,7 +327,7 @@ class Triangle {
       
         this.context.closePath();
         this.context.stroke();
-        this.context.fillStyle = this.piece.touched ? this.colours.touched : this.colours.back;
+        this.context.fillStyle = this.piece.invisible ? this.colours.invisible : this.piece.touched ? this.colours.touched : this.colours.back;
         this.context.fill();
 
         const brieflyVisible = currentPiece != null && this.piece.invisible && this.piece.col == currentPiece.col && this.piece.row == currentPiece.row;
