@@ -22,14 +22,22 @@ function startNewGame() {
     Storage.updateColourScheme(colourSelect);
 }
 
+function restartLevel() {
+    if (confirm('Are you sure you want to restart this level?')) playSelectedLevel();
+}
+
 function repeatGame() {
     const shapeType = Storage.getShapeType();
     const difficulty = Storage.getDifficulty(shapeType);
     const invisibility = Storage.getInvisibility(shapeType, difficulty);
     const level = Storage.getLevel(shapeType, difficulty, invisibility);
+    replayLevel(level);
+}
+
+function replayLevel(level) {
     document.getElementById("levelSlider").value = level;
     levelUpdated();
-    playSelectedLevel();
+    startNewGame();
 }
 
 function congratulate() {
@@ -65,8 +73,6 @@ function showStatistics() {
     document.getElementById("statisticsShapeType").innerText = shapeType;
     document.getElementById("statisticsDifficulty").innerText = mapDifficultyToWords(difficulty);
     document.getElementById("statisticsInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
-    setVisibility("nostats", maxLevel == 0);
-    setVisibility("stats", maxLevel != 0);
 
     const statsTableBody = document.getElementById("statsTableBody");
     statsTableBody.innerHTML = '';
@@ -74,24 +80,40 @@ function showStatistics() {
         const rating = LevelStatistics.mapRatingToGrade(Storage.getLevelRating(shapeType, difficulty, currentInvisibility, level));
         const attempts = Storage.getLevelAttempts(shapeType, difficulty, currentInvisibility, level);
 
-        let row = createStatsTableRow(level, rating, attempts);
+        let row = createStatsTableRow(level, rating, attempts, 'Replay', "");
         statsTableBody.appendChild(row);
     }
+
+    let row = createStatsTableRow(maxLevel+1, '', '', 'Play', "actionButton");
+    statsTableBody.appendChild(row);
 
     showStatisticsScreen();
 }
 
-function createStatsTableRow(level, grade, attempts) {
+function createStatsTableRow(level, grade, attempts, playText, buttonClass) {
     let row = document.createElement('tr');
     row.appendChild(createStatsTableCell(level));
     row.appendChild(createStatsTableCell(grade));
     row.appendChild(createStatsTableCell(attempts));
+    row.appendChild(createStatsTableCellButton(level, playText, buttonClass));
     return row;
 }
 
 function createStatsTableCell(value) {
     let cell = document.createElement('td');
     cell.innerText = value;
+    return cell;
+}
+
+function createStatsTableCellButton(level, playText, buttonClass) {
+    let button = document.createElement('button');
+    button.innerText = playText;
+    if (buttonClass != "") button.classList.add(buttonClass);
+    button.addEventListener('click', function() {replayLevel(level);}, false);
+
+    let cell = document.createElement('td');
+    cell.appendChild(button);
+
     return cell;
 }
 
@@ -285,7 +307,7 @@ function attachEvents() {
     }, false);
 
     document.getElementById("restartButton").addEventListener('click', function(event) {
-        playSelectedLevel();
+        restartLevel();
     }, false);
 
     document.getElementById("backButton").addEventListener('click', function(event) {
@@ -321,6 +343,10 @@ function attachEvents() {
     }, false);
 
     document.getElementById("showStatisticsButton").addEventListener('click', function(event) {
+        showStatistics();
+    }, false);
+
+    document.getElementById("showStatisticsButtonFromFinish").addEventListener('click', function(event) {
         showStatistics();
     }, false);
 

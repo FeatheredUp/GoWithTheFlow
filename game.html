@@ -37,7 +37,7 @@
 
         <div class="section">
             <button id="showStatisticsButton">Statistics</button>
-            <button id="startButton">Start</button>
+            <button id="startButton" class="actionButton">Start</button>
         </div>
     </div>
     <div class="gameScreen hidden" id="gameScreen">
@@ -56,18 +56,16 @@
     </div>
     <div class="statisticsScreen hidden" id="statisticsScreen">
         <div class="statisticsHeaderContainer">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span> <span id="statisticsInvisibility"></span></div> 
-        <div class="hidden" id="nostats">No information has been gathered on this difficulty yet.</div>
-        <div class="hidden" id="stats">
-            <table>
-                <thead>
-                    <th class="statsLevel">Level</th>
-                    <th class="statsGrade">Grade</th>
-                    <th class="statsAttempts">Attempts</th>
-                </thead>
-                <tbody id="statsTableBody"></tbody>
-            </table>
-        </div>
-        <button id="returnFromStatisticsButton">Return</button>
+        <table>
+            <thead>
+                <th class="statsLevel">Level</th>
+                <th class="statsGrade">Grade</th>
+                <th class="statsAttempts">Attempts</th>
+                <th class="statsReplay"></th>
+            </thead>
+            <tbody id="statsTableBody"></tbody>
+        </table>
+        <button id="returnFromStatisticsButton">Other options</button>
     </div>
     <div class="finishScreen hidden" id="finishScreen">
         <div class="congratulate" id="congratulate">
@@ -79,7 +77,8 @@
         </div>
         <div class="buttonBar">
             <button id="repeatButton">Repeat</button>
-            <button id="nextLevelButton">Next</button>
+            <button id="nextLevelButton" class="actionButton">Next</button>
+            <button id="showStatisticsButtonFromFinish">Statistics</button>
             <button id="returnToChooseButton">Other options</button>
         </div>
     </div>

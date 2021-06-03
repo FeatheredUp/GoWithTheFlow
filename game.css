@@ -1,6 +1,6 @@
 :root {
   --highlight-colour: rgb(113, 179, 218);
-  --button-colour: lightgreen;
+  --action-button-colour: lightgreen;
 }
 
 .hidden { 
@@ -26,6 +26,10 @@
   background-color: var(--highlight-colour);
   padding: 10px;
 }
+
+.actionButton {
+  background-color: var(--action-button-colour);
+} 
 
 .container {
   margin-left: 10px;
@@ -141,10 +145,6 @@ button {
 .chooseScreen .gameName {
   color: var(--highlight-colour);
 }
-
-.chooseScreen #startButton {
-  background-color: var(--button-colour);
-} 
 
 .chooseScreen #showStatisticsButton {
   width : auto;
