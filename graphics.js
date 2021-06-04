@@ -5,7 +5,7 @@ class Graphics {
     canvas;
     context;
     maxWidth = window.innerWidth - 50;
-    maxHeight = window.innerHeight - 150;
+    maxHeight = window.innerHeight - 250;
     leftMargin = 10;
     topMargin = 10;
     rightMargin = 10;
