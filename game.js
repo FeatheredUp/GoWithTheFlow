@@ -41,24 +41,24 @@ function replayLevel(level) {
 }
 
 function congratulate() {
-    let stats = new LevelStatistics(currentShapeType, currentDifficulty, currentLevel, graphics.puzzle.minSolveCount, graphics.puzzle.moveCount);
-
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
-    Storage.updateLevelRating(currentShapeType, currentDifficulty, currentInvisibility, currentLevel, stats.rating);
-    Storage.updateLevelAttempts(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
 
-    const attempts = Storage.getLevelAttempts(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
-    let attemptText = "after " + attempts + " attempts";
-    if (attempts == 1) attemptText = "after 1 attempt";
+    const identifier = new LevelIdentifier(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
+    let attemptInfo = new AttemptInformation(graphics.puzzle.minSolveCount, graphics.puzzle.moveCount, 10000)
+    Storage.logAttempt(identifier, attemptInfo);
+    attemptInfo = Storage.getAttemptInfo(identifier);
+    
+    let attemptText = "after " + attemptInfo.attemptCount + " attempts";
+    if (attemptInfo.attemptCount == 1) attemptText = "after 1 attempt";
 
-    document.getElementById("completeShapeType").innerText = stats.shapeType;
-    document.getElementById("completeMoveCount").innerText = stats.moves;
-    document.getElementById("completeMinimumMoveCount").innerText = stats.minimum;
-    document.getElementById("completeRating").innerText = stats.ratingGrade;
-    document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(stats.difficulty);
-    document.getElementById("completeLevel").innerText = stats.level;
+    document.getElementById("completeShapeType").innerText = currentShapeType;
+    document.getElementById("completeMoveCount").innerText = attemptInfo.actualCount;
+    document.getElementById("completeMinimumMoveCount").innerText = attemptInfo.targetCount;
+    document.getElementById("completeRating").innerText = attemptInfo.ratingGrade;
+    document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
+    document.getElementById("completeLevel").innerText = currentLevel;
     document.getElementById("completeAttempts").innerText = attemptText;
     document.getElementById("completeInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
     showFinishScreen();
@@ -72,30 +72,50 @@ function showStatistics() {
 
     document.getElementById("statisticsShapeType").innerText = shapeType;
     document.getElementById("statisticsDifficulty").innerText = mapDifficultyToWords(difficulty);
-    document.getElementById("statisticsInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
+    document.getElementById("statisticsInvisibility").innerText = invisibility ? " with invisibility" : "";
 
     const statsTableBody = document.getElementById("statsTableBody");
     statsTableBody.innerHTML = '';
-    for (let level=1; level<=maxLevel; level++) {
-        const rating = LevelStatistics.mapRatingToGrade(Storage.getLevelRating(shapeType, difficulty, currentInvisibility, level));
-        const attempts = Storage.getLevelAttempts(shapeType, difficulty, currentInvisibility, level);
 
-        let row = createStatsTableRow(level, rating, attempts, 'Replay', "");
+    let sumTarget = 0;
+    let sumActual = 0;
+    let sumAttempts = 0;
+    for (let level=1; level<=maxLevel; level++) {
+        const identifier = new LevelIdentifier(shapeType, difficulty, invisibility, level);
+        const attemptInfo = Storage.getAttemptInfo(identifier);
+
+        let row = createStatsTableRow(level, attemptInfo.targetCount, attemptInfo.actualCount, attemptInfo.ratingGrade, attemptInfo.attemptCount, 'Replay', "");
         statsTableBody.appendChild(row);
+
+        // gather data
+        sumTarget += attemptInfo.targetCount > 0 ? attemptInfo.targetCount : 0;
+        sumActual += attemptInfo.actualCount > 0 ? attemptInfo.actualCount : 0;
+        sumAttempts += attemptInfo.attemptCount > 0 ? attemptInfo.attemptCount : 0;
     }
 
-    let row = createStatsTableRow(maxLevel+1, '', '', 'Play', "actionButton");
-    statsTableBody.appendChild(row);
+    let newLevelRow = createStatsTableRow(maxLevel+1, '', '', '', '', 'Play', "actionButton");
+    statsTableBody.appendChild(newLevelRow);
+
+    // Add a row to the top of the table to summarise all data
+    const summaryInfo = new AttemptInformation(sumTarget, sumActual, 0, '', sumAttempts);
+    const summaryRow = createStatsTableRow('Overall Summary', sumTarget, sumActual, summaryInfo.ratingGrade, sumAttempts, '', '');
+    statsTableBody.insertBefore(summaryRow, statsTableBody.firstChild);
 
     showStatisticsScreen();
 }
 
-function createStatsTableRow(level, grade, attempts, playText, buttonClass) {
+function createStatsTableRow(level, target, actual, grade, attempts, playText, buttonClass) {
     let row = document.createElement('tr');
     row.appendChild(createStatsTableCell(level));
+    row.appendChild(createStatsTableCell(target != '' && target <= 0 ? 'Unknown' : target));
+    row.appendChild(createStatsTableCell(actual != '' && actual <= 0 ? 'Unknown' : actual));
     row.appendChild(createStatsTableCell(grade));
-    row.appendChild(createStatsTableCell(attempts));
-    row.appendChild(createStatsTableCellButton(level, playText, buttonClass));
+    row.appendChild(createStatsTableCell(attempts != '' && attempts <= 0 ? 'Unknown' : attempts));
+    if (playText == '') {
+        row.appendChild(document.createElement('td'));
+    }else {
+        row.appendChild(createStatsTableCellButton(level, playText, buttonClass));
+    }
     return row;
 }
 

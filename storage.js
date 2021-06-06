@@ -36,7 +36,16 @@ class Storage {
 
     static getLevelAttempts(shapeType, difficulty, invisibility, level) {
         const key = 'attempts_' + shapeType + '_' + difficulty + (invisibility ? '_I' : '' ) + '_' + level;
-        return Storage.getValue(key, 0);
+        return ;
+    }
+
+    static getAttemptInfo(identifier) {
+        const key = identifier.getKey();
+        var storedItem = localStorage.getItem(key);
+        if (!storedItem) {
+            return new AttemptInformation();
+        }
+        return Storage.parseAttemptInfo(storedItem);
     }
 
     /* Updating */
@@ -84,6 +93,27 @@ class Storage {
         localStorage.setItem(key, previousAttempts + 1);
     }
 
+    static logAttempt(identifier, attemptInfo) {
+        const key = identifier.getKey();
+        let data =  Storage.parseAttemptInfo(localStorage.getItem(key));
+        if (!data) {
+            localStorage.setItem(key, Storage.stringifyAttemptInfo(attemptInfo));
+            return;
+        }
+
+        // assume targetCount is unchanged...
+        // Has it improved?
+        if (attemptInfo.actualCount < data.actualCount || (attemptInfo.actualCount ==  data.actualCount && attemptInfo.timeTaken < data.timeTaken)) {
+            data.actualCount = attemptInfo.actualCount;
+            data.timeTaken = attemptInfo.timeTaken;
+            data.whenPlayed = attemptInfo.whenPlayed;
+        }
+        data.attemptCount += 1;
+
+        localStorage.setItem(key, Storage.stringifyAttemptInfo(data));
+    }
+
+
     /* Internals */
     static getValue(key, defaultValue) {
         if (!localStorage.getItem(key)) {
@@ -92,4 +122,13 @@ class Storage {
         return localStorage.getItem(key);
     }
 
+    static parseAttemptInfo(jsonAttempt) {
+        if (!jsonAttempt) return null;
+        const ai = JSON.parse(jsonAttempt);
+        return new AttemptInformation(ai.targetCount, ai.actualCount, ai.timeTaken, ai.whenPlayed, ai.attemptCount);
+    }
+
+    static stringifyAttemptInfo(data) {
+        return JSON.stringify(data);
+    }
 }

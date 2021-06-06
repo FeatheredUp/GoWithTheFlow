@@ -58,17 +58,21 @@
         </div>
     </div>
     <div class="statisticsScreen hidden" id="statisticsScreen">
-        <div class="statisticsHeaderContainer">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span> <span id="statisticsInvisibility"></span></div> 
-        <table>
-            <thead>
-                <th class="statsLevel">Level</th>
-                <th class="statsGrade">Grade</th>
-                <th class="statsAttempts">Attempts</th>
-                <th class="statsReplay"></th>
-            </thead>
-            <tbody id="statsTableBody"></tbody>
-        </table>
-        <button id="returnFromStatisticsButton">Other options</button>
+        <div class="section">
+            <div class="sectionTitle">Statistics on <span id="statisticsShapeType"></span> <span id="statisticsDifficulty"></span> <span id="statisticsInvisibility"></span></div> 
+            <button id="returnFromStatisticsButton">Other options</button>
+            <table class="container">
+                <thead>
+                    <th class="statsLevel">Level</th>
+                    <th class="statsTarget">Target Moves</th>
+                    <th class="statsActual">Your Moves</th>
+                    <th class="statsGrade">Grade</th>
+                    <th class="statsAttempts">Attempts</th>
+                    <th class="statsReplay"></th>
+                </thead>
+                <tbody id="statsTableBody"></tbody>
+            </table>
+        </div>
     </div>
     <div class="finishScreen hidden" id="finishScreen">
         <div class="congratulate" id="congratulate">
