@@ -1,14 +1,14 @@
 <html>
 <head>
-    <link rel="StyleSheet" href="../ss/stylesheet.css">
-    <link rel="stylesheet" href="game.css?4"></style>
-    <script src="options.js?4"></script>
-    <script src="graphics.js?4"></script>
-    <script src="puzzle.js?4"></script>
-    <script src="triangle.js?4"></script>
-    <script src="seedrandom.js?4"></script>
-    <script src="storage.js?4"></script>
-    <script src="statistics.js?4"></script>
+    <link rel="StyleSheet" href="../ss/stylesheet.css?6">
+    <link rel="stylesheet" href="game.css?6"></style>
+    <script src="options.js?6"></script>
+    <script src="graphics.js?6"></script>
+    <script src="puzzle.js?6"></script>
+    <script src="triangle.js?6"></script>
+    <script src="seedrandom.js?6"></script>
+    <script src="storage.js?6"></script>
+    <script src="statistics.js?6"></script>
     <title>Puzzling Times - Go with the Flow</title>
 </head>
 <body>
@@ -24,7 +24,7 @@
                 <span class="difficultyValue" id="difficultyValue"></span>
             </div>
             <div class="invisibilityContainer container">
-                <label for="invisibilityCheck">Some invisibile pieces:</label> 
+                <label for="invisibilityCheck">Some invisible pieces:</label> 
                 <label class="switch">
                     <input id="invisibilityCheck" type="checkbox" checked>
                     <span class="checkboxSwitch round"></span>
@@ -44,15 +44,18 @@
         </div>
     </div>
     <div class="gameScreen hidden" id="gameScreen">
-        <div class="topArea">
+        <div id="gameTopArea">
             <button id="backButton" class="gameButton left">Other options</button>
             <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty<span id="gameInvisibility"></span></div>
             <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
         </div>
+        <div id="gameCongratulateArea" class="hidden">
+            <div class="gameCongratulateLine">Congratulations! You completed it</div>
+        </div>
         <div class="mainArea">
             <canvas class="canvas" id="canvas"></canvas>
         </div>
-        <div class="gameButtonBar bottomArea">
+        <div id="gameButtonBar" class="bottomArea">
             <button id="undoButton" class="gameButton">Undo</button>
             <button id="restartButton" class="gameButton">Restart</button>
         </div>
@@ -89,6 +92,6 @@
             <button id="returnToChooseButton">Other options</button>
         </div>
     </div>
-    <script src="game.js?4"></script>
+    <script src="game.js?6"></script>
 </body>
 </html>

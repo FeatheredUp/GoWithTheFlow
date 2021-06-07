@@ -3,7 +3,8 @@ let canvas = document.getElementById('canvas'),
     currentShapeType,
     currentDifficulty,
     currentInvisibility,
-    currentLevel; 
+    currentLevel,
+    finishedState = false;; 
 
 initialiseControls();
 attachEvents();
@@ -41,6 +42,8 @@ function replayLevel(level) {
 }
 
 function congratulate() {
+    finishedState = true;
+
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
@@ -61,7 +64,12 @@ function congratulate() {
     document.getElementById("completeLevel").innerText = currentLevel;
     document.getElementById("completeAttempts").innerText = attemptText;
     document.getElementById("completeInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
-    showFinishScreen();
+
+    setVisibility('gameTopArea', false);
+    setVisibility('gameButtonBar', false);
+    setVisibility('gameCongratulateArea', true);
+
+    window.setTimeout( () => {showFinishScreen();}, 3000);
 }
 
 function showStatistics() {
@@ -138,6 +146,8 @@ function createStatsTableCellButton(level, playText, buttonClass) {
 }
 
 function clickCanvas(x, y){
+    if (finishedState) return;
+
     let hit = graphics.clickAtPoint(x, y);
 
     if (hit) {
@@ -163,6 +173,7 @@ function playSelectedLevel() {
     let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);
     graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
     render(graphics);
+    finishedState = false;
     showGameScreen();
 }
 
@@ -208,6 +219,9 @@ function showChooseScreen() {
 }
 
 function showFinishScreen() {
+    setVisibility('gameTopArea', true);
+    setVisibility('gameButtonBar', true);
+    setVisibility('gameCongratulateArea', false);
     updateChooseScreen();
 
     setSectionVisibility("gameScreen", false);

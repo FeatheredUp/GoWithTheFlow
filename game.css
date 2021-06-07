@@ -176,6 +176,14 @@ button {
     color: red;
 }
 
+.gameScreen .gameCongratulateLine {
+  height: 64px;
+  font-size: 2.4em;
+  text-align: center;
+  color: red;
+}
+
+
 /* Finish screen */
 
 .finishScreen {

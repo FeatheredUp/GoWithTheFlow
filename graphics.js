@@ -81,7 +81,7 @@ class Graphics {
         this.context.fillRect(0, 0, this.sizes.effectiveWidth, this.sizes.effectiveHeight);
 
         for (const shape of this.shapes) {
-            shape.render(currentPiece);
+            shape.render(currentPiece, this.puzzle.isFinished());
         }
     }
 
@@ -170,7 +170,7 @@ class Square {
     }
 
     // Render this shape
-    render(currentPiece) {
+    render(currentPiece, isFinished) {
         this.stop();
         // Background
         this.context.fillStyle = this.piece.invisible ? this.colours.invisible : this.piece.touched ? this.colours.touched : this.colours.back;
@@ -188,7 +188,7 @@ class Square {
 
         //The connectors
         if (this.piece.flow || !this.piece.invisible || brieflyVisible) {
-            this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
+            this.context.strokeStyle = isFinished ? this.colours.finished : this.piece.flow ? this.colours.flow : this.colours.noFlow;
             this.context.lineWidth = this.width / 6;
             this.context.lineJoin = 'bevel';
             this.context.lineCap = 'butt';
@@ -316,7 +316,7 @@ class Triangle {
     }
 
     // Render this shape
-    render(currentPiece) {
+    render(currentPiece, isFinished) {
         this.stop();
         this.context.strokeStyle = this.colours.noFlow;
         this.context.lineWidth = 1;
@@ -340,7 +340,7 @@ class Triangle {
             var upPos   = { x: this.centre.x, y: this.start.y};
             var downPos = { x: this.centre.x, y: this.end.y};
 
-            this.context.strokeStyle = this.piece.flow ? this.colours.flow : this.colours.noFlow;
+            this.context.strokeStyle = isFinished ? this.colours.finished : this.piece.flow ? this.colours.flow : this.colours.noFlow;
             this.context.lineWidth = this.width / 8;
             this.context.lineJoin = 'bevel';
             this.context.lineCap = 'butt';
