@@ -88,33 +88,49 @@ function showStatistics() {
     let sumTarget = 0;
     let sumActual = 0;
     let sumAttempts = 0;
+    let countLevelsAttempted = 0;
     for (let level=1; level<=maxLevel; level++) {
         const identifier = new LevelIdentifier(shapeType, difficulty, invisibility, level);
         const attemptInfo = Storage.getAttemptInfo(identifier);
 
-        let row = createStatsTableRow(level, attemptInfo.targetCount, attemptInfo.actualCount, attemptInfo.ratingGrade, attemptInfo.attemptCount, 'Replay', "");
+        let row = createStatsTableRow("Level " + level, attemptInfo.targetCount, attemptInfo.actualCount, attemptInfo.ratingGrade, attemptInfo.attemptCount, 'Replay', "", level);
         statsTableBody.appendChild(row);
 
         // gather data
         sumTarget += attemptInfo.targetCount > 0 ? attemptInfo.targetCount : 0;
         sumActual += attemptInfo.actualCount > 0 ? attemptInfo.actualCount : 0;
         sumAttempts += attemptInfo.attemptCount > 0 ? attemptInfo.attemptCount : 0;
+        countLevelsAttempted += attemptInfo.attemptCount > 0 ? 1 : 0
     }
 
-    let newLevelRow = createStatsTableRow(maxLevel+1, '', '', '', '', 'Play', "actionButton");
-    statsTableBody.appendChild(newLevelRow);
+    // Average row
+    if (countLevelsAttempted > 0) {
+        const avgTarget =  roundto2DP(sumTarget / countLevelsAttempted);
+        const avgActual = roundto2DP(sumActual / countLevelsAttempted);
+        const avgAttempts = roundto2DP(sumAttempts / countLevelsAttempted);
+
+        const avgInfo = new AttemptInformation(avgTarget, avgActual, 0, '', sumAttempts);
+        const avgRow = createStatsTableRow("Average", avgTarget, avgActual, avgInfo.ratingGrade, avgAttempts, '', '', 0);
+
+        statsTableBody.insertBefore(avgRow, statsTableBody.firstChild);
+    }
 
     // Add a row to the top of the table to summarise all data
     const summaryInfo = new AttemptInformation(sumTarget, sumActual, 0, '', sumAttempts);
-    const summaryRow = createStatsTableRow('Overall Summary', sumTarget, sumActual, summaryInfo.ratingGrade, sumAttempts, '', '');
+    const overallDescription = "Overall summary of " + countLevelsAttempted + " levels";
+    const summaryRow = createStatsTableRow(overallDescription, sumTarget, sumActual, summaryInfo.ratingGrade, sumAttempts, 'Play next level', 'actionButton', maxLevel+1);
     statsTableBody.insertBefore(summaryRow, statsTableBody.firstChild);
 
     showStatisticsScreen();
 }
 
-function createStatsTableRow(level, target, actual, grade, attempts, playText, buttonClass) {
+function roundto2DP(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+function createStatsTableRow(description, target, actual, grade, attempts, playText, buttonClass, level) {
     let row = document.createElement('tr');
-    row.appendChild(createStatsTableCell(level));
+    row.appendChild(createStatsTableCell(description));
     row.appendChild(createStatsTableCell(target != '' && target <= 0 ? 'Unknown' : target));
     row.appendChild(createStatsTableCell(actual != '' && actual <= 0 ? 'Unknown' : actual));
     row.appendChild(createStatsTableCell(grade));
