@@ -56,9 +56,13 @@ function congratulate() {
     let attemptText = "after " + attemptInfo.attemptCount + " attempts";
     if (attemptInfo.attemptCount == 1) attemptText = "after 1 attempt";
 
+    const missedBy = attemptInfo.actualCount - attemptInfo.targetCount;
+    const missedByMessage = (missedBy <= 0) ? "That's a perfect score."  : "You are " + missedBy + " away from perfection.";
+
     document.getElementById("completeShapeType").innerText = currentShapeType;
     document.getElementById("completeMoveCount").innerText = attemptInfo.actualCount;
     document.getElementById("completeMinimumMoveCount").innerText = attemptInfo.targetCount;
+    document.getElementById("completeTargetAim").innerText = missedByMessage;
     document.getElementById("completeRating").innerText = attemptInfo.ratingGrade;
     document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
     document.getElementById("completeLevel").innerText = currentLevel;
@@ -110,7 +114,7 @@ function showStatistics() {
         const avgAttempts = roundto2DP(sumAttempts / countLevelsAttempted);
 
         const avgInfo = new AttemptInformation(avgTarget, avgActual, 0, '', sumAttempts);
-        const avgRow = createStatsTableRow("Average", avgTarget, avgActual, avgInfo.ratingGrade, avgAttempts, '', '', 0);
+        const avgRow = createStatsTableRow("Average per level", avgTarget, avgActual, avgInfo.ratingGrade, avgAttempts, '', '', 0);
 
         statsTableBody.insertBefore(avgRow, statsTableBody.firstChild);
     }
@@ -131,10 +135,12 @@ function roundto2DP(num) {
 function createStatsTableRow(description, target, actual, grade, attempts, playText, buttonClass, level) {
     let row = document.createElement('tr');
     row.appendChild(createStatsTableCell(description));
-    row.appendChild(createStatsTableCell(target != '' && target <= 0 ? 'Unknown' : target));
-    row.appendChild(createStatsTableCell(actual != '' && actual <= 0 ? 'Unknown' : actual));
+    row.appendChild(createStatsTableCell(target <= 0 ? 'Unknown' : target));
+    row.appendChild(createStatsTableCell(actual <= 0 ? 'Unknown' : actual));
+    const missedBy = (target <= 0 || actual <= 0) ? 'Unknown' : roundto2DP(actual - target);
+    row.appendChild(createStatsTableCell(missedBy));
     row.appendChild(createStatsTableCell(grade));
-    row.appendChild(createStatsTableCell(attempts != '' && attempts <= 0 ? 'Unknown' : attempts));
+    row.appendChild(createStatsTableCell(attempts <= 0 ? 'Unknown' : attempts));
     if (playText == '') {
         row.appendChild(document.createElement('td'));
     }else {
@@ -184,6 +190,10 @@ function playSelectedLevel() {
     document.getElementById("gameLevel").innerText = currentLevel;
     document.getElementById("gameDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
     document.getElementById("gameInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
+
+    const identifier = new LevelIdentifier(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
+    const attemptInfo = Storage.getAttemptInfo(identifier);
+    setVisibility("minMoveInfo", attemptInfo.attemptCount > 0);
 
     if (graphics) graphics.stop();
     let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);

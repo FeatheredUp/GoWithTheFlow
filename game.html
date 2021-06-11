@@ -1,14 +1,14 @@
 <html>
 <head>
-    <link rel="StyleSheet" href="../ss/stylesheet.css?6">
-    <link rel="stylesheet" href="game.css?6"></style>
-    <script src="options.js?6"></script>
-    <script src="graphics.js?6"></script>
-    <script src="puzzle.js?6"></script>
-    <script src="triangle.js?6"></script>
-    <script src="seedrandom.js?6"></script>
-    <script src="storage.js?6"></script>
-    <script src="statistics.js?6"></script>
+    <link rel="StyleSheet" href="../ss/stylesheet.css?7">
+    <link rel="stylesheet" href="game.css?7"></style>
+    <script src="options.js?7"></script>
+    <script src="graphics.js?7"></script>
+    <script src="puzzle.js?7"></script>
+    <script src="triangle.js?7"></script>
+    <script src="seedrandom.js?7"></script>
+    <script src="storage.js?7"></script>
+    <script src="statistics.js?7"></script>
     <title>Puzzling Times - Go with the Flow</title>
 </head>
 <body>
@@ -47,7 +47,15 @@
         <div id="gameTopArea">
             <button id="backButton" class="gameButton left">Other options</button>
             <div class="levelDisplayContainer">Level <span id="gameLevel">XX</span> on <span id="gameDifficulty">XX</span> difficulty<span id="gameInvisibility"></span></div>
-            <div class="moveDisplayContainer">Move count: <span class="moveCount count" id="moveCount"></span> out of <span class="minMoveCount count" id="minMoveCount"></span> target</div> 
+            <div class="moveDisplayContainer">
+                Move count: 
+                <span class="moveCount count" id="moveCount"></span>
+                <span id="minMoveInfo">
+                    out of 
+                    <span class="minMoveCount count" id="minMoveCount"></span> 
+                    target
+                </span>
+            </div> 
         </div>
         <div id="gameCongratulateArea" class="hidden">
             <div class="gameCongratulateLine">Congratulations! You completed it</div>
@@ -69,6 +77,7 @@
                     <th class="statsLevel">Level</th>
                     <th class="statsTarget">Target Moves</th>
                     <th class="statsActual">Your Moves</th>
+                    <th class="statsMissed">Missed Target By</th>
                     <th class="statsGrade">Grade</th>
                     <th class="statsAttempts">Attempts</th>
                     <th class="statsReplay"></th>
@@ -83,6 +92,7 @@
             You have beaten <span id="completeShapeType"></span> <span id="completeDifficulty"></span> level <span id="completeLevel"></span><span id="completeInvisibility"></span>.
             You finished in <span id="completeMoveCount"></span> turns.  
             The target was <span id="completeMinimumMoveCount"></span>.
+            <span id="completeTargetAim"></span>
             <div class="rating">You get <span id="completeRating">0</span> rating <span id="completeAttempts"></span>.</div>
         </div>
         <div class="buttonBar">
@@ -92,6 +102,6 @@
             <button id="returnToChooseButton">Other options</button>
         </div>
     </div>
-    <script src="game.js?6"></script>
+    <script src="game.js?7"></script>
 </body>
 </html>
