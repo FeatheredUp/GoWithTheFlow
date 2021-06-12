@@ -4,7 +4,7 @@ let canvas = document.getElementById('canvas'),
     currentDifficulty,
     currentInvisibility,
     currentLevel,
-    finishedState = false;; 
+    finishedState = false;
 
 initialiseControls();
 attachEvents();
@@ -49,7 +49,7 @@ function congratulate() {
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
 
     const identifier = new LevelIdentifier(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
-    let attemptInfo = new AttemptInformation(graphics.puzzle.minSolveCount, graphics.puzzle.moveCount, 10000)
+    let attemptInfo = new AttemptInformation(graphics.puzzle.minSolveCount, graphics.puzzle.moveCount, graphics.getTimeTaken());
     Storage.logAttempt(identifier, attemptInfo);
     attemptInfo = Storage.getAttemptInfo(identifier);
     
@@ -63,6 +63,7 @@ function congratulate() {
     document.getElementById("completeMoveCount").innerText = attemptInfo.actualCount;
     document.getElementById("completeMinimumMoveCount").innerText = attemptInfo.targetCount;
     document.getElementById("completeTargetAim").innerText = missedByMessage;
+    document.getElementById("completeTimeTaken").innerText = roundto2DP(graphics.getTimeTaken());
     document.getElementById("completeRating").innerText = attemptInfo.ratingGrade;
     document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
     document.getElementById("completeLevel").innerText = currentLevel;
@@ -92,19 +93,23 @@ function showStatistics() {
     let sumTarget = 0;
     let sumActual = 0;
     let sumAttempts = 0;
+    let sumTimeTaken = 0;
     let countLevelsAttempted = 0;
+    let countLevelsWithTimes = 0;
     for (let level=1; level<=maxLevel; level++) {
         const identifier = new LevelIdentifier(shapeType, difficulty, invisibility, level);
         const attemptInfo = Storage.getAttemptInfo(identifier);
 
-        let row = createStatsTableRow("Level " + level, attemptInfo.targetCount, attemptInfo.actualCount, attemptInfo.ratingGrade, attemptInfo.attemptCount, 'Replay', "", level);
+        let row = createStatsTableRow("Level " + level, attemptInfo.targetCount, attemptInfo.actualCount, attemptInfo.ratingGrade, attemptInfo.attemptCount, 'Replay', "", level, attemptInfo.timeTaken);
         statsTableBody.appendChild(row);
 
         // gather data
         sumTarget += attemptInfo.targetCount > 0 ? attemptInfo.targetCount : 0;
         sumActual += attemptInfo.actualCount > 0 ? attemptInfo.actualCount : 0;
         sumAttempts += attemptInfo.attemptCount > 0 ? attemptInfo.attemptCount : 0;
+        sumTimeTaken += attemptInfo.timeTaken != 10000 && attemptInfo.timeTaken != -1 ? attemptInfo.timeTaken : 0;
         countLevelsAttempted += attemptInfo.attemptCount > 0 ? 1 : 0
+        countLevelsWithTimes += attemptInfo.timeTaken != 10000 && attemptInfo.timeTaken != -1 ? 1 : 0;
     }
 
     // Average row
@@ -112,9 +117,10 @@ function showStatistics() {
         const avgTarget =  roundto2DP(sumTarget / countLevelsAttempted);
         const avgActual = roundto2DP(sumActual / countLevelsAttempted);
         const avgAttempts = roundto2DP(sumAttempts / countLevelsAttempted);
+        const avgTimeTaken = countLevelsWithTimes > 0 ? roundto2DP(sumTimeTaken) / countLevelsWithTimes : -1;
 
         const avgInfo = new AttemptInformation(avgTarget, avgActual, 0, '', sumAttempts);
-        const avgRow = createStatsTableRow("Average per level", avgTarget, avgActual, avgInfo.ratingGrade, avgAttempts, '', '', 0);
+        const avgRow = createStatsTableRow("Average per level", avgTarget, avgActual, avgInfo.ratingGrade, avgAttempts, '', '', 0, avgTimeTaken);
 
         statsTableBody.insertBefore(avgRow, statsTableBody.firstChild);
     }
@@ -122,7 +128,7 @@ function showStatistics() {
     // Add a row to the top of the table to summarise all data
     const summaryInfo = new AttemptInformation(sumTarget, sumActual, 0, '', sumAttempts);
     const overallDescription = "Overall summary of " + countLevelsAttempted + " levels";
-    const summaryRow = createStatsTableRow(overallDescription, sumTarget, sumActual, summaryInfo.ratingGrade, sumAttempts, 'Play next level', 'actionButton', maxLevel+1);
+    const summaryRow = createStatsTableRow(overallDescription, sumTarget, sumActual, summaryInfo.ratingGrade, sumAttempts, 'Play next level', 'actionButton', maxLevel+1, sumTimeTaken);
     statsTableBody.insertBefore(summaryRow, statsTableBody.firstChild);
 
     showStatisticsScreen();
@@ -132,13 +138,14 @@ function roundto2DP(num) {
     return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-function createStatsTableRow(description, target, actual, grade, attempts, playText, buttonClass, level) {
+function createStatsTableRow(description, target, actual, grade, attempts, playText, buttonClass, level, timeTaken) {
     let row = document.createElement('tr');
     row.appendChild(createStatsTableCell(description));
     row.appendChild(createStatsTableCell(target <= 0 ? 'Unknown' : target));
     row.appendChild(createStatsTableCell(actual <= 0 ? 'Unknown' : actual));
     const missedBy = (target <= 0 || actual <= 0) ? 'Unknown' : roundto2DP(actual - target);
     row.appendChild(createStatsTableCell(missedBy));
+    row.appendChild(createStatsTableCell(timeTaken == 10000 || timeTaken <= 0 ? 'Unknown' : roundto2DP(timeTaken)));
     row.appendChild(createStatsTableCell(grade));
     row.appendChild(createStatsTableCell(attempts <= 0 ? 'Unknown' : attempts));
     if (playText == '') {

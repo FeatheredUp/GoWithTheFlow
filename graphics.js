@@ -13,6 +13,7 @@ class Graphics {
     options;
     sizes;
     shapeType;
+    timeStarted;
 
     constructor(canvas, puzzle, colourScheme, shapeType) {
         this.canvas = canvas;
@@ -29,6 +30,7 @@ class Graphics {
 
         this.addPieces(puzzle.pieces);
 
+        this.timeStarted = new Date();
         this.render(null);
     }
 
@@ -138,6 +140,11 @@ class Graphics {
         if ((shape.pointC.x - shape.pointA.x) * as_y - (shape.pointC.y - shape.pointA.y) * as_x > 0 == s_ab) return false;
         if ((shape.pointC.x - shape.pointB.x) * (y-shape.pointB.y) - (shape.pointC.y - shape.pointB.y) * (x-shape.pointB.x) > 0 != s_ab) return false;
         return true;
+    }
+
+    getTimeTaken() {
+        const milliSeconds = (new Date()).getTime() - this.timeStarted.getTime();
+        return milliSeconds / 1000;
     }
 }
 
