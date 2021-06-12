@@ -183,6 +183,9 @@ button {
   color: red;
 }
 
+.gameScreen #gameTopArea, .gameScreen #gameCongratulateArea {
+  height: 65px;
+}
 
 /* Finish screen */
 
