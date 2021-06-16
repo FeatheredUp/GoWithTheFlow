@@ -146,6 +146,8 @@ function createStatsTableRow(description, target, actual, grade, attempts, playT
     const missedBy = (target <= 0 || actual <= 0) ? 'Unknown' : roundto2DP(actual - target);
     row.appendChild(createStatsTableCell(missedBy));
     row.appendChild(createStatsTableCell(timeTaken == 10000 || timeTaken <= 0 ? 'Unknown' : roundto2DP(timeTaken)));
+    const mps = (timeTaken > 0 && timeTaken != 10000 && actual > 0) ? roundto2DP(actual / timeTaken) : 'Unknown';
+    row.appendChild(createStatsTableCell(mps));
     row.appendChild(createStatsTableCell(grade));
     row.appendChild(createStatsTableCell(attempts <= 0 ? 'Unknown' : attempts));
     if (playText == '') {
