@@ -56,14 +56,19 @@ function congratulate() {
     let attemptText = "after " + attemptInfo.attemptCount + " attempts";
     if (attemptInfo.attemptCount == 1) attemptText = "after 1 attempt";
 
+    const timeTaken = graphics.getTimeTaken();
     const missedBy = attemptInfo.actualCount - attemptInfo.targetCount;
     const missedByMessage = (missedBy <= 0) ? "That's a perfect score."  : "You are " + missedBy + " away from perfection.";
+
+    const mps = roundto2DP(attemptInfo.actualCount / timeTaken);
+    const movesPerSecondInfo = "You went at a speed of " + mps + " moves per second."
 
     document.getElementById("completeShapeType").innerText = currentShapeType;
     document.getElementById("completeMoveCount").innerText = attemptInfo.actualCount;
     document.getElementById("completeMinimumMoveCount").innerText = attemptInfo.targetCount;
     document.getElementById("completeTargetAim").innerText = missedByMessage;
     document.getElementById("completeTimeTaken").innerText = roundto2DP(graphics.getTimeTaken());
+    document.getElementById("completeMovesPerSecondInfo").innerText = movesPerSecondInfo;
     document.getElementById("completeRating").innerText = attemptInfo.ratingGrade;
     document.getElementById("completeDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
     document.getElementById("completeLevel").innerText = currentLevel;
