@@ -1,14 +1,14 @@
 <html>
 <head>
-    <link rel="StyleSheet" href="../ss/stylesheet.css?7">
-    <link rel="stylesheet" href="game.css?7"></style>
-    <script src="options.js?7"></script>
-    <script src="graphics.js?7"></script>
-    <script src="puzzle.js?7"></script>
-    <script src="triangle.js?7"></script>
-    <script src="seedrandom.js?7"></script>
-    <script src="storage.js?7"></script>
-    <script src="statistics.js?7"></script>
+    <link rel="StyleSheet" href="../ss/stylesheet.css?8">
+    <link rel="stylesheet" href="game.css?8"></style>
+    <script src="options.js?8"></script>
+    <script src="graphics.js?8"></script>
+    <script src="puzzle.js?8"></script>
+    <script src="triangle.js?8"></script>
+    <script src="seedrandom.js?8"></script>
+    <script src="storage.js?8"></script>
+    <script src="statistics.js?8"></script>
     <title>Puzzling Times - Go with the Flow</title>
 </head>
 <body>
@@ -17,13 +17,14 @@
         <div class="welcome" id="welcome">Welcome to <span class="gameName">Go with the Flow</span>!</div> 
         <div class="section">
             <div class="sectionTitle">Game type</div>
-            <div class="shapeContainer container">Choose shape <select id="shapeSelect"><option value="square" selected>Square</option><option value="triangle">Triangle</option></select></div>
-            <div class="difficultyContainer container">
+            <div class="beginnerContainer container hidden" id="beginnerContainer">More options will appear here when you have completed 5 levels.</div>
+            <div class="shapeContainer container" id="shapeContainer">Choose shape <select id="shapeSelect"></select></div>
+            <div class="difficultyContainer container" id="difficultyContainer">
                 Choose difficulty 
                 <input type="range" min="1" max="5" value="1" class="difficultySlider slider" id="difficultySlider"> 
                 <span class="difficultyValue" id="difficultyValue"></span>
             </div>
-            <div class="invisibilityContainer container">
+            <div class="invisibilityContainer container" id="invisibilityContainer">
                 <label for="invisibilityCheck">Some invisible pieces:</label> 
                 <label class="switch">
                     <input id="invisibilityCheck" type="checkbox" checked>
@@ -98,6 +99,7 @@
             It took <span id="completeTimeTaken"></span> seconds.
             <span id="completeMovesPerSecondInfo"></span>
             <div class="rating">You get <span id="completeRating">0</span> rating <span id="completeAttempts"></span>.</div>
+            <div class="completeUnlock" id="completeUnlock"></div>
         </div>
         <div class="buttonBar">
             <button id="repeatButton">Repeat</button>
@@ -106,6 +108,6 @@
             <button id="returnToChooseButton">Other options</button>
         </div>
     </div>
-    <script src="game.js?7"></script>
+    <script src="game.js?8"></script>
 </body>
 </html>

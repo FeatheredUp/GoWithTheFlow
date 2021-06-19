@@ -63,6 +63,8 @@ function congratulate() {
     const mps = roundto2DP(attemptInfo.actualCount / timeTaken);
     const movesPerSecondInfo = "You went at a speed of " + mps + " moves per second."
 
+    const newUnlock = getNewUnlockText(attemptInfo);
+
     document.getElementById("completeShapeType").innerText = currentShapeType;
     document.getElementById("completeMoveCount").innerText = attemptInfo.actualCount;
     document.getElementById("completeMinimumMoveCount").innerText = attemptInfo.targetCount;
@@ -74,12 +76,25 @@ function congratulate() {
     document.getElementById("completeLevel").innerText = currentLevel;
     document.getElementById("completeAttempts").innerText = attemptText;
     document.getElementById("completeInvisibility").innerText = currentInvisibility ? " with invisibility" : "";
+    document.getElementById("completeUnlock").innerText = newUnlock;
 
     setVisibility('gameTopArea', false);
     setVisibility('gameButtonBar', false);
     setVisibility('gameCongratulateArea', true);
 
     window.setTimeout( () => {showFinishScreen();}, 3000);
+}
+
+function getNewUnlockText(attemptInfo) {
+    let message = '';
+    if (currentLevel == 5 && attemptInfo.attemptCount == 1 && currentDifficulty < 5  && !currentInvisibility) {
+        message += 'You have unlocked a new difficulty!  You can now play ' + currentShapeType + ' ' + mapDifficultyToWords(currentDifficulty + 1) + ', ';
+        message += 'and ' + currentShapeType + ' ' + mapDifficultyToWords(currentDifficulty) + ' with invisibility.   ';
+        if (currentShapeType == 'square' && currentDifficulty == 4) {
+            message += 'You have unlocked a new shape!  You can now choose TRIANGLE.';
+        }
+    }
+    return message;
 }
 
 function showStatistics() {
@@ -218,9 +233,21 @@ function playSelectedLevel() {
 }
 
 function updateChooseScreen() {
+    const shapeSelect = document.getElementById('shapeSelect');
+    shapeSelect.innerHTML = '';
+
+    const triangleUnlocked = isShapeUnlocked('triangle');
+    addOption(shapeSelect, 'Square', false);
+    if (triangleUnlocked) addOption(shapeSelect, 'Triangle', false);
+    setVisibility('shapeContainer', triangleUnlocked);
+
     const shapeType = Storage.getShapeType();
-    document.getElementById("shapeSelect").value = shapeType;
+    shapeSelect.value = shapeType;
     shapeTypeUpdated()
+
+    // if square easy is not unlocked yet, show special message
+    const beginner = !isDifficultyUnlocked('square', 2);
+    setVisibility('beginnerContainer', beginner);
 }
 
 function undoLastMove() {
@@ -274,7 +301,12 @@ function showFinishScreen() {
 
 function shapeTypeUpdated() {
     const shapeType = document.getElementById("shapeSelect").value;
+    let maxDifficulty = maxDifficultyUnlocked(shapeType);
+    setVisibility('difficultyContainer', maxDifficulty > 1);
+    document.getElementById('difficultySlider').max = maxDifficulty;
+
     let difficulty = Storage.getDifficulty(shapeType);
+    if (difficulty > maxDifficulty) difficulty = maxDifficulty;
     document.getElementById('difficultySlider').value = difficulty;
     difficultySliderUpdated();
 }
@@ -284,7 +316,11 @@ function difficultySliderUpdated() {
     document.getElementById("difficultyValue").innerText = mapDifficultyToWords(difficulty);
 
     const shapeType = document.getElementById("shapeSelect").value;
-    const invisibility = Storage.getInvisibility(shapeType, difficulty);
+
+    const invisibilityAvailable = isInvisibilityUnlocked(shapeType, difficulty);
+    setVisibility('invisibilityContainer', invisibilityAvailable);
+
+    const invisibility = invisibilityAvailable && Storage.getInvisibility(shapeType, difficulty);
     document.getElementById("invisibilityCheck").checked = invisibility;
 
     invisibilityUpdated();
@@ -346,12 +382,42 @@ function setSectionVisibility(section, show) {
     }
 }
 
+function isShapeUnlocked(shape) {
+    if (shape == 'square') return true;
+
+    // Triangle unlocks when square challenging unlocks
+    return isDifficultyUnlocked('square', 5);
+}
+
+function maxDifficultyUnlocked(shape) {
+    // return the highest difficulty level that is unlocked
+    for (let difficulty = 5; difficulty > 1; difficulty--) {
+        if (isDifficultyUnlocked(shape, difficulty)) return difficulty;
+    }
+    return 1;
+}
+
+function isDifficultyUnlocked(shape, difficulty) {
+    // trivial is always unlocked if the shape type is unlocked
+    if (difficulty == 1) return true;
+
+    // other difficulties are unlocked if 5 levels of the previous difficulty have been completed
+    const maxLevel = Storage.getMaxLevel(shape, difficulty - 1, false);
+    return maxLevel >= 5;
+}
+
+function isInvisibilityUnlocked(shape, difficulty) {
+    // Invisibility is unlocked when 5 levels of the current difficulty without invisibility have been completed
+    const maxLevel = Storage.getMaxLevel(shape, difficulty, false);
+    return maxLevel >= 5;
+}
+
 /* initialise drop downs */ 
 
 function initialiseControls() {
     const selectedColourScheme = Storage.getColourScheme();
     const colourSelect = document.getElementById("colourSelect");
-     let options = new Options('default');
+    let options = new Options('default');
     const colours = options.allSchemes;
     for (const colour of colours) {
         addOption(colourSelect, colour.name, colour.name == selectedColourScheme);
@@ -361,6 +427,7 @@ function initialiseControls() {
 function addOption(select, itemText, selected) {
     const opt = document.createElement('option');
     opt.text = itemText;
+    opt.value = itemText.toLowerCase();
     opt.selected = selected;
     select.add(opt);
 }
