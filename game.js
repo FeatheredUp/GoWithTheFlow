@@ -43,25 +43,31 @@ function replayLevel(level) {
 
 function congratulate() {
     finishedState = true;
+    const timeTaken = graphics.getTimeTaken();
 
     // Store the successful completion of this level
     Storage.updateLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
     Storage.updateMaxLevel(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
 
     const identifier = new LevelIdentifier(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
-    let attemptInfo = new AttemptInformation(graphics.puzzle.minSolveCount, graphics.puzzle.moveCount, graphics.getTimeTaken());
+    const previousAttemptInfo = Storage.getAttemptInfo(identifier);
+    let attemptInfo = new AttemptInformation(graphics.puzzle.minSolveCount, graphics.puzzle.moveCount, timeTaken);
     Storage.logAttempt(identifier, attemptInfo);
     attemptInfo = Storage.getAttemptInfo(identifier);
     
     let attemptText = "after " + attemptInfo.attemptCount + " attempts";
     if (attemptInfo.attemptCount == 1) attemptText = "after 1 attempt";
 
-    const timeTaken = graphics.getTimeTaken();
     const missedBy = attemptInfo.actualCount - attemptInfo.targetCount;
     const missedByMessage = (missedBy <= 0) ? "That's a perfect score."  : "You are " + missedBy + " away from perfection.";
 
     const mps = roundto2DP(attemptInfo.actualCount / timeTaken);
-    const movesPerSecondInfo = "You went at a speed of " + mps + " moves per second."
+    let movesPerSecondInfo = "You went at a speed of " + mps + " moves per second.  "
+    if (attemptInfo.attemptCount > 1) {
+        const previousMps = roundto2DP(previousAttemptInfo.actualCount / previousAttemptInfo.timeTaken);
+        movesPerSecondInfo += "Your previous speed was " + previousMps + " moves per second.  "
+        if (mps > previousMps) movesPerSecondInfo += "You're getting faster!";
+    }
 
     const newUnlock = getNewUnlockText(attemptInfo);
 
@@ -215,6 +221,10 @@ function playSelectedLevel() {
     currentLevel = parseInt(document.getElementById("levelSlider").value);
     currentInvisibility = document.getElementById("invisibilityCheck").checked;
     const colourScheme = document.getElementById('colourSelect').value;
+    
+    if (graphics) graphics.stop();
+    let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);
+    graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
 
     document.getElementById("gameLevel").innerText = currentLevel;
     document.getElementById("gameDifficulty").innerText = mapDifficultyToWords(currentDifficulty);
@@ -223,10 +233,16 @@ function playSelectedLevel() {
     const identifier = new LevelIdentifier(currentShapeType, currentDifficulty, currentInvisibility, currentLevel);
     const attemptInfo = Storage.getAttemptInfo(identifier);
     setVisibility("minMoveInfo", attemptInfo.attemptCount > 0);
+    if (attemptInfo.attemptCount > 0) {
+        if (attemptInfo.actualCount > graphics.puzzle.minSolveCount) {
+            document.getElementById('minMoveCount').innerHTML =  attemptInfo.actualCount;
+            document.getElementById('minMoveType').innerHTML = 'previous';
+        }else {
+            document.getElementById('minMoveCount').innerHTML =  graphics.puzzle.minSolveCount;
+            document.getElementById('minMoveType').innerHTML = 'target';
+        }
+    }
 
-    if (graphics) graphics.stop();
-    let puzzle = (currentShapeType == 'square') ?  new Puzzle(currentDifficulty, currentLevel, currentInvisibility): new TrianglePuzzle(currentDifficulty, currentLevel, currentInvisibility);
-    graphics = new Graphics(canvas, puzzle, colourScheme, currentShapeType);
     render(graphics);
     finishedState = false;
     showGameScreen();
@@ -256,10 +272,8 @@ function undoLastMove() {
 }
 
 function render() {
-    const minSolveCount = graphics.puzzle.minSolveCount;
     const moveCount = graphics.puzzle.moveCount;
     document.getElementById('moveCount').innerHTML = moveCount;
-    document.getElementById('minMoveCount').innerHTML = minSolveCount;
 }
 
 /* Show the selected screen and hide the others */
